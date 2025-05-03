@@ -2,9 +2,10 @@
 
 set -e
 
+mkdir -p /.cockroach-certs
 cd /.cockroach-certs
 
-#cp ../certs/* .
+cp /dokku-cockroach-certs/* .
 chown cockroach:cockroach server.key
 chmod 600 server.key
 
