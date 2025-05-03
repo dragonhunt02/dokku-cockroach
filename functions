@@ -118,7 +118,7 @@ service_create_container() {
   COCKROACH_ARGS="start-single-node --accept-sql-without-tls"
 
   # shellcheck disable=SC2086
-  suppress_output "$DOCKER_BIN" container create "${DOCKER_ARGS[@]}" "$PLUGIN_IMAGE:$PLUGIN_IMAGE_VERSION" $CONFIG_OPTIONS "$COCKROACH_ARGS"
+  suppress_output "$DOCKER_BIN" container create "${DOCKER_ARGS[@]}" "$PLUGIN_IMAGE:$PLUGIN_IMAGE_VERSION" $CONFIG_OPTIONS $COCKROACH_ARGS
 
   if [[ -n "$(fn-plugin-property-get "$PLUGIN_COMMAND_PREFIX" "$SERVICE" "post-create-network")" ]]; then
     dokku_log_verbose_quiet "Connecting to networks after container create"
