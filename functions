@@ -18,7 +18,8 @@ service_connect() {
   local SERVICE_TTY_OPTS
   has_tty && SERVICE_TTY_OPTS="-t"
 
-  "$DOCKER_BIN" container exec --env=LANG=C.UTF-8 --env=LC_ALL=C.UTF-8 -i $SERVICE_TTY_OPTS "$SERVICE_NAME" psql -v ON_ERROR_STOP=1 -h localhost -U postgres "$DATABASE_NAME"
+  #"$DOCKER_BIN" container exec --env=LANG=C.UTF-8 --env=LC_ALL=C.UTF-8 -i $SERVICE_TTY_OPTS "$SERVICE_NAME" psql -v ON_ERROR_STOP=1 -h localhost -U postgres "$DATABASE_NAME"
+  "$DOCKER_BIN" container exec --env=LANG=C.UTF-8 --env=LC_ALL=C.UTF-8 -i $SERVICE_TTY_OPTS "$SERVICE_NAME" cockroach sql --set=errexit=true -u root -d "$DATABASE_NAME"
 }
 
 service_create() {
@@ -115,7 +116,7 @@ service_create_container() {
     LINK_CONTAINER_DOCKER_ARGS+=("--network=${network}")
   fi
 
-  COCKROACH_ARGS="start-single-node --accept-sql-without-tls"
+  local COCKROACH_ARGS="start-single-node --accept-sql-without-tls"
 
   # shellcheck disable=SC2086
   suppress_output "$DOCKER_BIN" container create "${DOCKER_ARGS[@]}" "$PLUGIN_IMAGE:$PLUGIN_IMAGE_VERSION" $CONFIG_OPTIONS $COCKROACH_ARGS
@@ -153,9 +154,10 @@ service_create_container() {
 
   dokku_log_verbose_quiet "Securing connection to database"
   service_pause "$SERVICE" >/dev/null
-  "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/scripts/create_ssl_certs.sh" "$SERVICE_ROOT" &>/dev/null
-  "$DOCKER_BIN" container run --rm -i -v "$SERVICE_HOST_ROOT/data:/cockroach/cockroach-data" -v "$SERVICE_HOST_ROOT/certs:/dokku-cockroach-certs" "$PLUGIN_IMAGE:$PLUGIN_IMAGE_VERSION" bash -s <"$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/scripts/enable_ssl.sh" &>/dev/null
-  rm -rf "$SERVICE_HOST_ROOT/certs"
+  #"$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/scripts/create_ssl_certs.sh" "$SERVICE_ROOT" &>/dev/null
+  # -v "$SERVICE_HOST_ROOT/certs:/dokku-cockroach-certs" 
+  "$DOCKER_BIN" container run --rm -i -v "$SERVICE_HOST_ROOT/data:/cockroach/cockroach-data" "$PLUGIN_IMAGE:$PLUGIN_IMAGE_VERSION" bash -s <"$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/scripts/enable_ssl.sh" &>/dev/null
+  #rm -rf "$SERVICE_HOST_ROOT/certs"
 
   suppress_output "$DOCKER_BIN" container start "$(cat "$SERVICE_ROOT/ID")"
   service_port_reconcile_status "$SERVICE"
