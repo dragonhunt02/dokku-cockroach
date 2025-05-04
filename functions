@@ -148,12 +148,12 @@ service_create_container() {
   fi
 
   dokku_log_verbose_quiet "Adding certificates"
-  "$DOCKER_BIN" container exec "$SERVICE_NAME" su - bash -s <"$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/scripts/enable_ssl.sh"
+  "$DOCKER_BIN" container exec "$SERVICE_NAME" bash -s <"$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/scripts/enable_ssl.sh"
   # &>/dev/null
 
   dokku_log_verbose_quiet "Creating container database"
   # "$DOCKER_BIN" container exec "$SERVICE_NAME" su - postgres -c "createdb -E utf8 $DATABASE_NAME" 2>/dev/null || dokku_log_verbose_quiet 'Already exists'
-  "$DOCKER_BIN" container exec "$SERVICE_NAME" su - cockroach sql --certs-dir=/cockroach/certs --host=127.0.0.1 --execute "CREATE DATABASE $DATABASE_NAME;"
+  "$DOCKER_BIN" container exec "$SERVICE_NAME" cockroach sql --certs-dir=/cockroach/certs --host=127.0.0.1 --execute "CREATE DATABASE $DATABASE_NAME;"
   # TODO: set up secure multi node
   #--insecure
 
