@@ -7,6 +7,7 @@ CERTS_DIR="/.cockroach-certs"
 mkdir -p $CERTS_DIR
 cd $CERTS_DIR
 
+# TODO: Allow ca.key load from path argument
 # TODO: Review hostname usage
 if [ ! -f "$CERTS_DIR/ca.crt" ]; then
     echo "Cockroach certificates not found. Generating new certificates..."
