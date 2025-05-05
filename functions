@@ -184,7 +184,7 @@ service_export() {
   "$DOCKER_BIN" container exec "$SERVICE_NAME" cockroach sql --certs-dir=/cockroach/certs --host=127.0.0.1 --execute "BACKUP DATABASE $DATABASE_NAME INTO 'userfile://defaultdb.public.userfiles_$COCKROACH_USER/$DATABASE_NAME' AS OF SYSTEM TIME '-10s';" > /dev/null
   "$DOCKER_BIN" container exec -i "$SERVICE_NAME" mkdir -p "/dokku-tmp" > /dev/null
   "$DOCKER_BIN" container exec -i "$SERVICE_NAME" cockroach userfile get --certs-dir=/cockroach/certs --host=127.0.0.1 "userfile://defaultdb.public.userfiles_$COCKROACH_USER/$DATABASE_NAME" "/dokku-tmp/$DATABASE_NAME" > /dev/null
-  "$DOCKER_BIN" container exec -i "$SERVICE_NAME" tar -cf - "/dokku-tmp/$DATABASE_NAME"
+  "$DOCKER_BIN" container exec -i "$SERVICE_NAME" tar -cf - "/dokku-tmp/$DATABASE_NAME" 2>/dev/null
   "$DOCKER_BIN" container exec -i "$SERVICE_NAME" rm -rf "/dokku-tmp/$DATABASE_NAME" > /dev/null
   "$DOCKER_BIN" container exec "$SERVICE_NAME" cockroach userfile delete --certs-dir=/cockroach/certs --host=127.0.0.1 "userfile://defaultdb.public.userfiles_$COCKROACH_USER/$DATABASE_NAME" > /dev/null
   # "$DOCKER_BIN" container exec "$SERVICE_NAME" env PGPASSWORD="$PASSWORD" pg_dump -Fc --no-acl --no-owner -h localhost -U postgres -w "$DATABASE_NAME"
