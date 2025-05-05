@@ -204,14 +204,19 @@ service_import() {
   if [[ -t 0 ]]; then
     dokku_log_fail "No data provided on stdin."
   fi
-  mkdir -p /cockroach/cockroach-data/extern/backup
+  #mkdir -p /tmp/cockroach/cockroach-data/extern/backup
+  mkdir -p "$SERVICE_ROOT/extern/backup"
   #tee /cockroach/cockroach-data/extern/backup/$DATABASE_NAME.tar
   #tar -xvf /cockroach/cockroach-data/extern/backup/$DATABASE_NAME.tar -C /cockroach/cockroach-data/extern/backup/$DATABASE_NAME
   #rm -rf /cockroach/cockroach-data/extern/backup/$DATABASE_NAME.tar
-  tar -xvf - -C /cockroach/cockroach-data/extern/backup/$DATABASE_NAME
+  tar -xvf - -C "$SERVICE_ROOT/extern/backup/$DATABASE_NAME"
+  "$DOCKER_BIN" container exec -i "$SERVICE_NAME" mkdir -p /cockroach/cockroach-data/extern/backup/
+  "$DOCKER_BIN" cp "$SERVICE_ROOT/extern/backup/$DATABASE_NAME" "${SERVICE_NAME}:/cockroach/cockroach-data/extern/backup/$DATABASE_NAME"
+
+  #"$DOCKER_BIN" container exec -i "$SERVICE_NAME" tee /cockroach/cockroach-data/extern/backup/$DATABASE_NAME < tar -xvf -
   "$DOCKER_BIN" container exec "$SERVICE_NAME" cockroach sql --certs-dir=/cockroach/certs --host=127.0.0.1 --execute "show backups in 'nodelocal://1/backup';"
   "$DOCKER_BIN" container exec "$SERVICE_NAME" cockroach sql --certs-dir=/cockroach/certs --host=127.0.0.1 --execute "RESTORE DATABASE $DATABASE_NAME FROM LATEST IN 'nodelocal://1/backup' with skip_localities_check;"
-  rm -rf /cockroach/cockroach-data/extern/backup/$DATABASE_NAME
+  rm -rf "$SERVICE_ROOT/extern/backup/$DATABASE_NAME"
   #"$DOCKER_BIN" container exec -i "$SERVICE_NAME" env PGPASSWORD="$PASSWORD" pg_restore -h localhost -cO --if-exists -d "$DATABASE_NAME" -U postgres -w
 }
 
