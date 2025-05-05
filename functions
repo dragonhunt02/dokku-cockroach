@@ -182,8 +182,12 @@ service_export() {
   # TODO: Set up backup export
   local COCKROACH_USER=root
   "$DOCKER_BIN" container exec "$SERVICE_NAME" cockroach sql --certs-dir=/cockroach/certs --host=127.0.0.1 --execute "BACKUP DATABASE $DATABASE_NAME INTO 'userfile://defaultdb.public.userfiles_$COCKROACH_USER/$DATABASE_NAME' AS OF SYSTEM TIME '-10s';" > /dev/null
-  "$DOCKER_BIN" container exec -i "$SERVICE_NAME" cockroach userfile get --certs-dir=/cockroach/certs --host=127.0.0.1 "userfile://defaultdb.public.userfiles_$COCKROACH_USER/$DATABASE_NAME"
-  #"$DOCKER_BIN" container exec "$SERVICE_NAME" cockroach userfile delete --certs-dir=/cockroach/certs --host=127.0.0.1 "userfile://defaultdb.public.userfiles_$COCKROACH_USER/$DATABASE_NAME" > /dev/null
+E_NAME' AS OF SYSTEM TIME '-10s';" > /dev/null
+  "$DOCKER_BIN" container exec -i "$SERVICE_NAME" mkdir -p "/dokku-tmp" > /dev/null
+  "$DOCKER_BIN" container exec -i "$SERVICE_NAME" cockroach userfile get --certs-dir=/cockroach/certs --host=127.0.0.1 "userfile://defaultdb.public.userfiles_$COCKROACH_USER/$DATABASE_NAME" "/dokku-tmp/$DATABASE_NAME" > /dev/null
+  "$DOCKER_BIN" container exec -i "$SERVICE_NAME" tar -cf - "/dokku-tmp/$DATABASE_NAME"
+  "$DOCKER_BIN" container exec -i "$SERVICE_NAME" rm -rf "/dokku-tmp/$DATABASE_NAME" > /dev/null
+  "$DOCKER_BIN" container exec "$SERVICE_NAME" cockroach userfile delete --certs-dir=/cockroach/certs --host=127.0.0.1 "userfile://defaultdb.public.userfiles_$COCKROACH_USER/$DATABASE_NAME" > /dev/null
   # "$DOCKER_BIN" container exec "$SERVICE_NAME" env PGPASSWORD="$PASSWORD" pg_dump -Fc --no-acl --no-owner -h localhost -U postgres -w "$DATABASE_NAME"
   status=$?
   [[ -n $SSH_TTY ]] && stty opost
@@ -202,7 +206,9 @@ service_import() {
     dokku_log_fail "No data provided on stdin."
   fi
   mkdir -p /cockroach/cockroach-data/extern/backup
-  tee /cockroach/cockroach-data/extern/backup/$DATABASE_NAME
+  tee /cockroach/cockroach-data/extern/backup/$DATABASE_NAME.tar
+  tar -xvf /cockroach/cockroach-data/extern/backup/$DATABASE_NAME.tar -C /cockroach/cockroach-data/extern/backup/$DATABASE_NAME
+  rm -rf /cockroach/cockroach-data/extern/backup/$DATABASE_NAME.tar
   "$DOCKER_BIN" container exec "$SERVICE_NAME" cockroach sql --certs-dir=/cockroach/certs --host=127.0.0.1 --execute "show backups in 'nodelocal://1/backup';"
   "$DOCKER_BIN" container exec "$SERVICE_NAME" cockroach sql --certs-dir=/cockroach/certs --host=127.0.0.1 --execute "RESTORE DATABASE $DATABASE_NAME FROM LATEST IN 'nodelocal://1/backup' with skip_localities_check;"
   rm -rf /cockroach/cockroach-data/extern/backup/$DATABASE_NAME
