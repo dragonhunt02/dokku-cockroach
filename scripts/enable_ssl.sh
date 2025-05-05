@@ -2,7 +2,7 @@
 
 set -e
 
-CERTS_DIR="/.cockroach-certs"
+CERTS_DIR="/cockroach/certs"
 
 mkdir -p $CERTS_DIR
 cd $CERTS_DIR
