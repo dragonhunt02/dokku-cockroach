@@ -89,6 +89,7 @@ service_create_container() {
   DOCKER_ARGS+=("--name=$SERVICE_NAME")
   DOCKER_ARGS+=("--restart=always")
   DOCKER_ARGS+=("--volume=$SERVICE_HOST_ROOT/data:/cockroach/cockroach-data")
+  DOCKER_ARGS+=("--volume=$SERVICE_HOST_ROOT/cockroach-certs:/cockroach/certs")
 
   declare -a LINK_CONTAINER_DOCKER_ARGS
   LINK_CONTAINER_DOCKER_ARGS=()
@@ -116,7 +117,9 @@ service_create_container() {
     LINK_CONTAINER_DOCKER_ARGS+=("--network=${network}")
   fi
 
-  local COCKROACH_ARGS="start-single-node --accept-sql-without-tls"
+  #local COCROACH
+  local COCKROACH_ARGS="start-single-node"
+  #--accept-sql-without-tls"
 
   # shellcheck disable=SC2086
   suppress_output "$DOCKER_BIN" container create "${DOCKER_ARGS[@]}" "$PLUGIN_IMAGE:$PLUGIN_IMAGE_VERSION" $CONFIG_OPTIONS $COCKROACH_ARGS
@@ -128,6 +131,7 @@ service_create_container() {
       "$DOCKER_BIN" network connect --alias "$network_alias" "$line" "$SERVICE_NAME"
     done < <(fn-plugin-property-get "$PLUGIN_COMMAND_PREFIX" "$SERVICE" "post-create-network" | tr "," "\n")
   fi
+
   suppress_output "$DOCKER_BIN" container start "$(cat "$SERVICE_ROOT/ID")"
   service_port_reconcile_status "$SERVICE"
 
