@@ -602,7 +602,7 @@ dokku postgres:links lollipop
 
 The underlying service data can be imported and exported with the following commands:
 
-### import a dump into the postgres service database
+### import a dump into the cockroach service database
 
 ```shell
 # usage
@@ -612,10 +612,10 @@ dokku postgres:import <service>
 Import a datastore dump:
 
 ```shell
-dokku postgres:import lollipop < data.dump
+dokku postgres:import lollipop < data.tar
 ```
 
-### export a dump of the postgres service database
+### export a dump of the cockroach service database
 
 ```shell
 # usage
@@ -631,13 +631,13 @@ dokku postgres:export lollipop
 You can redirect this output to a file:
 
 ```shell
-dokku postgres:export lollipop > data.dump
+dokku postgres:export lollipop > data.tar
 ```
 
-Note that the export will result in a file containing the binary postgres export data. It can be converted to plain text using `pg_restore` as follows
+Note that the export will result in a `.tar` file containing a CockroachDB `BACKUP` data. It can be converted to original format as follows
 
 ```shell
-pg_restore data.dump -f plain.sql
+tar -xvf data.tar
 ```
 
 ### Backups
