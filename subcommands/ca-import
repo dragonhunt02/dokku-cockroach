@@ -6,7 +6,8 @@ source "$PLUGIN_CORE_AVAILABLE_PATH/common/functions"
 source "$(dirname "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)")/functions"
 
 service-ca-import-cmd() {
-  #E Import CockroachDB Certificate Authority public/private keys from directory. 
+  #E Import CockroachDB Certificate Authority public/private keys from directory.
+  #E > NOTE: All existing service certificates will be removed and regenerated using imported 'ca.key'.
   #E dokku $PLUGIN_COMMAND_PREFIX:ca-import lollipop ./certs/path/
   #A service, service to run command against
   declare desc="import service CA keys ('ca.key' and 'ca.crt') from directory"
