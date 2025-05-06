@@ -217,7 +217,7 @@ service_create_container() {
 
   service_port_reconcile_status "$SERVICE"
   dokku_log_verbose_quiet "Initializing Cockroach cluster"
-  "$DOCKER_BIN" container exec "$SERVICE_NAME" init --certs-dir=/cockroach/certs --host=127.0.0.1
+  "$DOCKER_BIN" container exec "$SERVICE_NAME" cockroach init --certs-dir=/cockroach/certs --host=127.0.0.1
   
   "$DOCKER_BIN" container exec -i "$SERVICE_NAME" cockroach sql --certs-dir=/cockroach/certs --host=127.0.0.1 --execute "CREATE DATABASE $DATABASE_NAME;"
   
