@@ -17,7 +17,7 @@ if [ ! -f "$CERTS_DIR/ca.crt" ]; then
 fi
 echo "Generating node certificates..."
 # TODO check if node certs exist
-cockroach cert create-node localhost $(hostname) --certs-dir=${CERTS_DIR} --ca-key=${CERTS_DIR}/ca.key
+cockroach cert create-node localhost 127.0.0.1 $(hostname) --certs-dir=${CERTS_DIR} --ca-key=${CERTS_DIR}/ca.key
 cockroach cert create-client root --certs-dir=${CERTS_DIR} --ca-key=${CERTS_DIR}/ca.key
 
 cat /etc/passwd || true
