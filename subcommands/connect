@@ -15,7 +15,7 @@ service-connect-cmd() {
   [[ ${argv[0]} == "$cmd" ]] && shift 1
   declare SERVICE="$1"
   is_implemented_command "$cmd" || dokku_log_fail "Not yet implemented"
-
+  pwd
   [[ -z "$SERVICE" ]] && dokku_log_fail "Please specify a valid name for the service"
   verify_service_name "$SERVICE"
   service_connect "$@"
