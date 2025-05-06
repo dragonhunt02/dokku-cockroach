@@ -184,11 +184,11 @@ service_create_container() {
   fi
 
   dokku_log_verbose_quiet "Adding certificates"
-  "$DOCKER_BIN" container run --rm -i -v "$SERVICE_NAME" bash -s <"$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/scripts/create_certs.sh"
+  "$DOCKER_BIN" container run --rm -i -v "$SERVICE_HOST_ROOT/cockroach-certs:/cockroach/certs" "$PLUGIN_IMAGE:$PLUGIN_IMAGE_VERSION" bash -s <"$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/scripts/create_certs.sh"
   # &>/dev/null
 
   dokku_log_verbose_quiet "Setting up 'dokku' user"
-  "$DOCKER_BIN" container --rm -i -v "$SERVICE_NAME" bash -s <"$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/scripts/setup_node_user.sh"
+  "$DOCKER_BIN" container run --rm -i -v "$SERVICE_HOST_ROOT/cockroach-certs:/cockroach/certs" -v "$SERVICE_HOST_ROOT/data:/cockroach/cockroach-data" bash -s <"$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/scripts/setup_node_user.sh"
 
   dokku_log_verbose_quiet "Creating container database"
   # "$DOCKER_BIN" container exec "$SERVICE_NAME" su - postgres -c "createdb -E utf8 $DATABASE_NAME" 2>/dev/null || dokku_log_verbose_quiet 'Already exists'
