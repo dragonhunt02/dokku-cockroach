@@ -30,7 +30,7 @@ create_default_user() {
     cockroach start-single-node --certs-dir=$CERTS_DIR --advertise-addr=127.0.0.1 --background
     cockroach sql --certs-dir=$CERTS_DIR --host=127.0.0.1 --execute "$user_query;"
   
-    cockroach sql --certs-dir=$CERTS_DIR --host=127.0.0.1 --execute "GRANT ALL ON DATABASE "$COCKROACH_DATABASE" TO "$COCKROACH_USER";"
+    #cockroach sql --certs-dir=$CERTS_DIR --host=127.0.0.1 --execute "GRANT ALL ON DATABASE "$COCKROACH_DATABASE" TO "$COCKROACH_USER";"
     cockroach sql --certs-dir=$CERTS_DIR --host=127.0.0.1 --execute "GRANT admin TO "$COCKROACH_USER";"
 
     echo >&2 "finished creating default user \"$COCKROACH_USER\""
