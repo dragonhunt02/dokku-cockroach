@@ -5,7 +5,7 @@ set -e
 CERTS_DIR="/cockroach/certs"
 
 user_already_exists() {
-   cockroach sql --certs-dir=$CERTS_DIR --host=127.0.0.1 --execute "select username FROM [SHOW ROLES]" \
+   $cockroach sql --certs-dir=$CERTS_DIR --host=127.0.0.1 --execute "select username FROM [SHOW ROLES]" \
      | tail -n +2 \
      | grep "^${1}\$"
 }
@@ -36,6 +36,7 @@ create_default_user() {
     echo >&2 "user \"$COCKROACH_USER\" already exists"
   fi
 }
-
+ls /usr/local/bin || true
+ls /usr/bin || true
 create_default_user "$1"
 
