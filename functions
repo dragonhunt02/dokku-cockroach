@@ -106,6 +106,8 @@ service_create_container() {
   local PASSWORD="$(service_password "$SERVICE")"
   local DATABASE_NAME="$(get_database_name "$SERVICE")"
   local PREVIOUS_ID
+  local ADVERT_ADDR="$2"
+  [[ -z "ADVERT_ADDR" ]] && ADVERT_ADDR=127.0.0.1 && dokku_log_warn "Public advertised address not set, fallback to 127.0.0.1. Other nodes may fail connecting to cluster."
 
   if [[ -f "$SERVICE_ROOT/CONFIG_OPTIONS" ]]; then
     export CONFIG_OPTIONS="$(cat "$SERVICE_ROOT/CONFIG_OPTIONS")"
@@ -118,6 +120,7 @@ service_create_container() {
   DOCKER_ARGS=()
   DOCKER_ARGS+=("--cidfile=$SERVICE_ROOT/ID")
   DOCKER_ARGS+=("--env-file=$SERVICE_ROOT/ENV")
+  DOCKER_ARGS+=("--env=COCKROACH_USER=dokku")
   DOCKER_ARGS+=("--env=COCKROACH_PASSWORD=$PASSWORD")
   DOCKER_ARGS+=("--hostname=$SERVICE_NAME")
   DOCKER_ARGS+=("--label=dokku.service=$PLUGIN_COMMAND_PREFIX")
@@ -154,7 +157,8 @@ service_create_container() {
   fi
 
   #local COCROACH
-  local COCKROACH_ARGS="start-single-node"
+  local COCKROACH_ARGS="start --certs-dir=/cockroach/certs --advertise-addr=$ADVERT_ADDR --join=127.0.0.1"
+  # "start-single-node"
   #--accept-sql-without-tls"
 
   # shellcheck disable=SC2086
@@ -191,6 +195,9 @@ service_create_container() {
   "$DOCKER_BIN" container exec "$SERVICE_NAME" bash -s <"$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/scripts/create_certs.sh"
   # &>/dev/null
 
+  dokku_log_verbose_quiet "Setting up 'dokku' user"
+  "$DOCKER_BIN" container exec "$SERVICE_NAME" bash -s <"$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/scripts/setup_node_user.sh"
+
   dokku_log_verbose_quiet "Creating container database"
   # "$DOCKER_BIN" container exec "$SERVICE_NAME" su - postgres -c "createdb -E utf8 $DATABASE_NAME" 2>/dev/null || dokku_log_verbose_quiet 'Already exists'
   "$DOCKER_BIN" container exec "$SERVICE_NAME" cockroach sql --certs-dir=/cockroach/certs --host=127.0.0.1 --execute "CREATE DATABASE $DATABASE_NAME;"
@@ -204,8 +211,11 @@ service_create_container() {
   #"$DOCKER_BIN" container run --rm -i -v "$SERVICE_HOST_ROOT/data:/cockroach/cockroach-data" "$PLUGIN_IMAGE:$PLUGIN_IMAGE_VERSION" bash -s <"$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/scripts/enable_ssl.sh" &>/dev/null
   #rm -rf "$SERVICE_HOST_ROOT/certs"
 
+  
   suppress_output "$DOCKER_BIN" container start "$(cat "$SERVICE_ROOT/ID")"
   service_port_reconcile_status "$SERVICE"
+  dokku_log_verbose_quiet "Initializing Cockroach cluster"
+  "$DOCKER_BIN" container exec "$SERVICE_NAME" init --certs-dir=/cockroach/certs --host=127.0.0.1
 
   dokku_log_info2 "$PLUGIN_SERVICE container created: $SERVICE"
   service_info "$SERVICE"
