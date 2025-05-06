@@ -17,8 +17,6 @@ service_ca_export() {
   local DATABASE_NAME="$(get_database_name "$SERVICE")"
   local DEST_PATH="$2"
   local OPT="$3"
-  local SERVICE_TTY_OPTS
-  has_tty && SERVICE_TTY_OPTS="-t"
 
   "$DOCKER_BIN" cp "$SERVICE_NAME:/cockroach/certs/ca.key" "$DEST_PATH/ca.key"
   "$DOCKER_BIN" cp "$SERVICE_NAME:/cockroach/certs/ca.crt" "$DEST_PATH/ca.crt"
@@ -28,6 +26,20 @@ service_ca_export() {
   else
     dokku_log_verbose_quiet "CA certificates copied from service $SERVICE"
   fi
+}
+
+service_ca_import() {
+  local SERVICE="$1"
+  local SERVICE_ROOT="$PLUGIN_DATA_ROOT/$SERVICE"
+  local SERVICE_NAME="$(get_service_name "$SERVICE")"
+  local DATABASE_NAME="$(get_database_name "$SERVICE")"
+  local SRC_PATH="$2"
+
+  "$DOCKER_BIN" cp "$SRC_PATH/ca.key" "$SERVICE_NAME:/cockroach/certs/ca.key"
+  dokku_log_verbose_quiet "CA private key certificate imported to service $SERVICE"
+
+  "$DOCKER_BIN" cp "$SRC_PATH/ca.crt" "$SERVICE_NAME:/cockroach/certs/ca.crt"
+  dokku_log_verbose_quiet "CA public key certificate imported to service $SERVICE"
 }
 
 service_connect() {
