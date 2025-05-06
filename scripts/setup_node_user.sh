@@ -22,10 +22,12 @@ create_default_user() {
   if [[ -z $(user_already_exists "$COCKROACH_USER") ]]; then
     cockroach cert create-client --certs-dir=${CERTS_DIR} --ca-key=${CERTS_DIR}/ca.key "$COCKROACH_USER"
 
+    return 0
     local user_query="CREATE USER "$COCKROACH_USER""
     if [[ -n "$COCKROACH_PASSWORD" ]]; then
       user_query+=" WITH PASSWORD '$COCKROACH_PASSWORD'"
     fi
+    cockroach start-single-node --certs-dir=$CERTS_DIR --advertise-addr=127.0.0.1 --background
     cockroach sql --certs-dir=$CERTS_DIR --host=127.0.0.1 --execute "$user_query;"
   
     cockroach sql --certs-dir=$CERTS_DIR --host=127.0.0.1 --execute "GRANT ALL ON DATABASE "$COCKROACH_DATABASE" TO "$COCKROACH_USER";"
