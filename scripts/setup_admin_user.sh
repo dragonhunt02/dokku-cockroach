@@ -12,6 +12,7 @@ user_already_exists() {
 
 set_admin_user() {
   COCKROACH_USER=
+  DATABASE_NAME="$1"
   NEW_USER="dokku"
   #$1"
   echo >&2 "Add user admin permissions to: $NEW_USER"
@@ -26,7 +27,7 @@ set_admin_user() {
     fi
     cockroach sql --certs-dir=$CERTS_DIR --host=127.0.0.1 --execute "$user_query;"
   
-    cockroach sql --certs-dir=$CERTS_DIR --host=127.0.0.1 --execute "GRANT ALL ON DATABASE "$COCKROACH_DATABASE" TO "$NEW_USER";"
+    cockroach sql --certs-dir=$CERTS_DIR --host=127.0.0.1 --execute "GRANT ALL ON DATABASE "$DATABASE_NAME" TO "$NEW_USER";"
     cockroach sql --certs-dir=$CERTS_DIR --host=127.0.0.1 --execute "GRANT admin TO "$NEW_USER";"
 
     echo >&2 "finished creating default user \"$NEW_USER\""
