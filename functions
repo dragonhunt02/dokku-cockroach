@@ -219,7 +219,7 @@ service_create_container() {
   dokku_log_verbose_quiet "Initializing Cockroach cluster"
   "$DOCKER_BIN" container exec "$SERVICE_NAME" cockroach init --certs-dir=/cockroach/certs --host=127.0.0.1
   
-  "$DOCKER_BIN" container exec -i "$SERVICE_NAME" bash -s <"$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/scripts/setup_admin_user.sh"
+  "$DOCKER_BIN" container exec -i "$SERVICE_NAME" bash -s -- "$DATABASE_NAME" <"$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/scripts/setup_admin_user.sh"
   "$DOCKER_BIN" container exec -i "$SERVICE_NAME" cockroach sql --certs-dir=/cockroach/certs --host=127.0.0.1 --execute "CREATE DATABASE $DATABASE_NAME;"
   
   dokku_log_info2 "$PLUGIN_SERVICE container created: $SERVICE"
