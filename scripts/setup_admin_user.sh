@@ -11,26 +11,27 @@ user_already_exists() {
 }
 
 set_admin_user() {
-  COCKROACH_USER="dokku"
+  COCKROACH_USER=
+  NEW_USER="dokku"
   #$1"
-  echo >&2 "Add user admin permissions to: $COCKROACH_USER"
-  if [[ -z $COCKROACH_USER ]]; then
+  echo >&2 "Add user admin permissions to: $NEW_USER"
+  if [[ -z $NEW_USER ]]; then
     return 0
   fi
 
-  if [[ -z $(user_already_exists "$COCKROACH_USER") ]]; then
-    local user_query="CREATE USER "$COCKROACH_USER""
+  if [[ -z $(user_already_exists "$NEW_USER") ]]; then
+    local user_query="CREATE USER "$NEW_USER""
     if [[ -n "$COCKROACH_PASSWORD" ]]; then
       user_query+=" WITH PASSWORD '$COCKROACH_PASSWORD'"
     fi
-    cockroach sql --certs-dir=$CERTS_DIR --host=127.0.0.1 --user=root --execute "$user_query;"
+    cockroach sql --certs-dir=$CERTS_DIR --host=127.0.0.1 --execute "$user_query;"
   
-    cockroach sql --certs-dir=$CERTS_DIR --host=127.0.0.1 --user=root --execute "GRANT ALL ON DATABASE "$COCKROACH_DATABASE" TO "$COCKROACH_USER";"
-    cockroach sql --certs-dir=$CERTS_DIR --host=127.0.0.1 --user=root --execute "GRANT admin TO "$COCKROACH_USER";"
+    cockroach sql --certs-dir=$CERTS_DIR --host=127.0.0.1 --execute "GRANT ALL ON DATABASE "$COCKROACH_DATABASE" TO "$NEW_USER";"
+    cockroach sql --certs-dir=$CERTS_DIR --host=127.0.0.1 --execute "GRANT admin TO "$NEW_USER";"
 
-    echo >&2 "finished creating default user \"$COCKROACH_USER\""
+    echo >&2 "finished creating default user \"$NEW_USER\""
   else
-    echo >&2 "user \"$COCKROACH_USER\" already exists"
+    echo >&2 "user \"$NEW_USER\" already exists"
   fi
 }
 
