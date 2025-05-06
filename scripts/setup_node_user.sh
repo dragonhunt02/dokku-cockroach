@@ -11,7 +11,8 @@ user_already_exists() {
 }
 
 create_default_user() {
-  COCKROACH_USER="$1"
+  COCKROACH_USER="dokku"
+  #$1"
   echo >&2 "Create user: $COCKROACH_USER"
   if [[ -z $COCKROACH_USER ]]; then
     return 0
