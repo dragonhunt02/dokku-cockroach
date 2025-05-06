@@ -7,9 +7,9 @@ source "$(dirname "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)")/functions"
 
 service-ca-import-cmd() {
   #E Import CockroachDB Certificate Authority public/private keys from directory. 
-  #E dokku $PLUGIN_COMMAND_PREFIX:ca-import lollipop ./certs/
+  #E dokku $PLUGIN_COMMAND_PREFIX:ca-import lollipop ./certs/path/
   #A service, service to run command against
-  declare desc="import service CA keys ('ca.key' and/or 'ca.crt') from directory"
+  declare desc="import service CA keys ('ca.key' and 'ca.crt') from directory"
   local cmd="$PLUGIN_COMMAND_PREFIX:ca-export" argv=("$@")
   [[ ${argv[0]} == "$cmd" ]] && shift 1
   declare SERVICE="$1"
