@@ -27,7 +27,7 @@ set_admin_user() {
     fi
     cockroach sql --certs-dir=$CERTS_DIR --host=127.0.0.1 --execute "$user_query;"
   
-    cockroach sql --certs-dir=$CERTS_DIR --host=127.0.0.1 --execute "GRANT ALL ON DATABASE "$DATABASE_NAME" TO "$NEW_USER";"
+    #cockroach sql --certs-dir=$CERTS_DIR --host=127.0.0.1 --execute "GRANT ALL ON DATABASE "$DATABASE_NAME" TO "$NEW_USER";"
     cockroach sql --certs-dir=$CERTS_DIR --host=127.0.0.1 --execute "GRANT admin TO "$NEW_USER";"
 
     echo >&2 "finished creating default user \"$NEW_USER\""
