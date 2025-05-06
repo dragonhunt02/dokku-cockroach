@@ -38,7 +38,6 @@ create_default_user() {
     echo >&2 "user \"$COCKROACH_USER\" already exists"
   fi
 }
-ls /usr/local/bin || true
-ls /usr/bin || true
+
 create_default_user "$1"
 
