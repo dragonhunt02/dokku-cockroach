@@ -213,6 +213,8 @@ service_create_container() {
 
   
   suppress_output "$DOCKER_BIN" container start "$(cat "$SERVICE_ROOT/ID")"
+ dokku_container_log_verbose_quiet "$SERVICE_NAME"
+
   service_port_reconcile_status "$SERVICE"
   dokku_log_verbose_quiet "Initializing Cockroach cluster"
   "$DOCKER_BIN" container exec "$SERVICE_NAME" init --certs-dir=/cockroach/certs --host=127.0.0.1
