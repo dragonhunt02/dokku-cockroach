@@ -28,6 +28,8 @@ postgres:backup-set-public-key-encryption <service> <public-key-id> # set GPG Pu
 postgres:backup-unschedule <service>               # unschedule the backup of the postgres service
 postgres:backup-unset-encryption <service>         # unset encryption for future backups of the postgres service
 postgres:backup-unset-public-key-encryption <service> # unset GPG Public Key encryption for future backups of the postgres service
+postgres:ca-export <service> <path> [--force-copy] # export service CA keys to directory and remove private key from service
+postgres:ca-import <service> <path>                # import service CA keys ('ca.key' and 'ca.crt') from directory
 postgres:clone <service> <new-service> [--clone-flags...] # create container <new-name> then copy data from <name> into <new-name>
 postgres:connect <service>                         # connect to the service via the postgres connection tool
 postgres:create <service> [--create-flags...]      # create a postgres service
@@ -310,12 +312,20 @@ dokku postgres:set lollipop post-create-network
 
 The lifecycle of each service can be managed through the following commands:
 
-### connect to the service via the postgres connection tool
+### connect to the service via the cockroach sql connection tool
 
 ```shell
 # usage
 dokku postgres:connect <service>
 ```
+
+You can also pass additional arguments to `cockroach sql`
+
+```shell
+# Example to allow 'DROP DATABASE...' and similar unsafe operations
+dokku postgres:connect lollipop --safe-updates=false
+```
+
 
 Connect to the service via the postgres connection tool:
 
