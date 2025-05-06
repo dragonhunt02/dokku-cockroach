@@ -11,6 +11,8 @@ user_already_exists() {
 }
 
 create_default_user() {
+  echo >&2 "Create already exists"
+  return 0
   if [[ -z $COCKROACH_USER ]]; then
     return 0
   fi
