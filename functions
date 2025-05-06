@@ -20,8 +20,8 @@ service_ca_export() {
 
   "$DOCKER_BIN" cp "$SERVICE_NAME:/cockroach/certs/ca.key" "$DEST_PATH/ca.key"
   "$DOCKER_BIN" cp "$SERVICE_NAME:/cockroach/certs/ca.crt" "$DEST_PATH/ca.crt"
-  if [[ "$OPT" != "--force-copy"]]; then
-    "$DOCKER_BIN" exec container_name rm -rf /cockroach/certs/ca.key
+  if [[ "$OPT" != "--force-copy" ]]; then
+    "$DOCKER_BIN" exec "$SERVICE_NAME" rm -rf /cockroach/certs/ca.key
     dokku_log_verbose_quiet "CA certificates transferred from service $SERVICE"
   else
     dokku_log_verbose_quiet "CA certificates copied from service $SERVICE"
