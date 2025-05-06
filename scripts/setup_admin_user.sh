@@ -23,10 +23,10 @@ set_admin_user() {
     if [[ -n "$COCKROACH_PASSWORD" ]]; then
       user_query+=" WITH PASSWORD '$COCKROACH_PASSWORD'"
     fi
-    cockroach sql --certs-dir=$CERTS_DIR --host=127.0.0.1 --execute "$user_query;"
+    cockroach sql --certs-dir=$CERTS_DIR --host=127.0.0.1 --user=root --execute "$user_query;"
   
-    cockroach sql --certs-dir=$CERTS_DIR --host=127.0.0.1 --execute "GRANT ALL ON DATABASE "$COCKROACH_DATABASE" TO "$COCKROACH_USER";"
-    cockroach sql --certs-dir=$CERTS_DIR --host=127.0.0.1 --execute "GRANT admin TO "$COCKROACH_USER";"
+    cockroach sql --certs-dir=$CERTS_DIR --host=127.0.0.1 --user=root --execute "GRANT ALL ON DATABASE "$COCKROACH_DATABASE" TO "$COCKROACH_USER";"
+    cockroach sql --certs-dir=$CERTS_DIR --host=127.0.0.1 --user=root --execute "GRANT admin TO "$COCKROACH_USER";"
 
     echo >&2 "finished creating default user \"$COCKROACH_USER\""
   else
