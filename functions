@@ -128,7 +128,7 @@ service_create_container() {
   DOCKER_ARGS+=("--name=$SERVICE_NAME")
   DOCKER_ARGS+=("--restart=always")
   DOCKER_ARGS+=("--volume=$SERVICE_HOST_ROOT/data:/cockroach/cockroach-data")
-#  DOCKER_ARGS+=("--volume=$SERVICE_HOST_ROOT/cockroach-certs:/cockroach/certs")
+  DOCKER_ARGS+=("--volume=$SERVICE_HOST_ROOT/cockroach-certs:/cockroach/certs")
 
   declare -a LINK_CONTAINER_DOCKER_ARGS
   LINK_CONTAINER_DOCKER_ARGS=()
@@ -192,7 +192,7 @@ service_create_container() {
 
   dokku_log_verbose_quiet "Creating container database"
   # "$DOCKER_BIN" container exec "$SERVICE_NAME" su - postgres -c "createdb -E utf8 $DATABASE_NAME" 2>/dev/null || dokku_log_verbose_quiet 'Already exists'
-  "$DOCKER_BIN" container exec "$SERVICE_NAME" cockroach sql --certs-dir=/cockroach/certs --host=127.0.0.1 --execute "CREATE DATABASE $DATABASE_NAME;"
+  "$DOCKER_BIN" container exec -i "$SERVICE_NAME" cockroach sql --certs-dir=/cockroach/certs --host=127.0.0.1 --execute "CREATE DATABASE $DATABASE_NAME;"
   # TODO: set up secure multi node
   #--insecure
 
