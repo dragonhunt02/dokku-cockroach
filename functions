@@ -42,7 +42,7 @@ service_ca_import() {
   dokku_log_verbose_quiet "CA public key certificate imported to service $SERVICE"
 
   dokku_log_verbose_quiet "Regenerating node certificates for service $SERVICE"
-  "$DOCKER_BIN" container exec "$SERVICE_NAME" bash -s <"$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/scripts/create_ssl_certs.sh"
+  "$DOCKER_BIN" container exec "$SERVICE_NAME" bash -s <"$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/scripts/create_certs.sh"
 
 }
 
@@ -188,7 +188,7 @@ service_create_container() {
   fi
 
   dokku_log_verbose_quiet "Adding certificates"
-  "$DOCKER_BIN" container exec "$SERVICE_NAME" bash -s <"$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/scripts/create_ssl_certs.sh"
+  "$DOCKER_BIN" container exec "$SERVICE_NAME" bash -s <"$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/scripts/create_certs.sh"
   # &>/dev/null
 
   dokku_log_verbose_quiet "Creating container database"
