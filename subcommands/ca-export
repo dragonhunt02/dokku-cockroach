@@ -6,21 +6,22 @@ source "$PLUGIN_CORE_AVAILABLE_PATH/common/functions"
 source "$(dirname "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)")/functions"
 
 service-ca-export-cmd() {
-  #E Transfer CockroachDB Certificate Authority private key to location. 
-  #E > NOTE: Key will be removed from service, so you won't be able to add more nodes.
-  #E dokku $PLUGIN_COMMAND_PREFIX:ca-export lollipop
+  #E Export CockroachDB Certificate Authority public/private keys to directory. 
+  #E > NOTE: Private key will be removed from service after export, so you won't be able to add new nodes.
+  #E dokku $PLUGIN_COMMAND_PREFIX:ca-export lollipop [ --force-copy ]
   #A service, service to run command against
-  declare desc="export service CA private key to location and remove it from service"
+  declare desc="export service CA keys to directory and remove private key from service"
   local cmd="$PLUGIN_COMMAND_PREFIX:ca-export" argv=("$@")
   [[ ${argv[0]} == "$cmd" ]] && shift 1
   declare SERVICE="$1"
   declare DEST_PATH="$2"
+  declare OPT="$3"
   is_implemented_command "$cmd" || dokku_log_fail "Not yet implemented"
 
   [[ -z "$SERVICE" ]] && dokku_log_fail "Please specify a valid name for the service"
-  [[ -z "$DEST_PATH" ]] && dokku_log_fail "Please specify a valid export path for the service ca.key"
+  [[ ! -d "$DEST_PATH" ]] && dokku_log_fail "Please specify a valid export directory path for the service certifcates"
   verify_service_name "$SERVICE"
-  service_ca-export "$1" "$2"
+  service_ca_export "$1" "$2" "$3"
 }
 
 service-ca-export-cmd "$@"
