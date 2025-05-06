@@ -192,17 +192,17 @@ service_create_container() {
 
   dokku_log_verbose_quiet "Creating container database"
   # "$DOCKER_BIN" container exec "$SERVICE_NAME" su - postgres -c "createdb -E utf8 $DATABASE_NAME" 2>/dev/null || dokku_log_verbose_quiet 'Already exists'
-  "$DOCKER_BIN" container exec -i "$SERVICE_NAME" cockroach sql --certs-dir=/cockroach/certs --host=127.0.0.1 --execute "CREATE DATABASE $DATABASE_NAME;"
+  #"$DOCKER_BIN" container exec -i "$SERVICE_NAME" cockroach sql --certs-dir=/cockroach/certs --host=127.0.0.1 --execute "CREATE DATABASE $DATABASE_NAME;"
   # TODO: set up secure multi node
   #--insecure
 
   dokku_log_verbose_quiet "Waiting for container to be ready"
-  if ! suppress_output "$DOCKER_BIN" container run "${LINK_CONTAINER_DOCKER_ARGS[@]}" "$PLUGIN_WAIT_IMAGE" -c "$network_alias:$PLUGIN_DATASTORE_WAIT_PORT"; then
+  #if ! suppress_output "$DOCKER_BIN" container run "${LINK_CONTAINER_DOCKER_ARGS[@]}" "$PLUGIN_WAIT_IMAGE" -c "$network_alias:$PLUGIN_DATASTORE_WAIT_PORT"; then
     dokku_log_info2_quiet "Start of $SERVICE container output"
-    dokku_container_log_verbose_quiet "$SERVICE_NAME"
-    dokku_log_info2_quiet "End of $SERVICE container output"
-    return 1
-  fi
+  #  dokku_container_log_verbose_quiet "$SERVICE_NAME"
+  #  dokku_log_info2_quiet "End of $SERVICE container output"
+  #  return 1
+  #fi
 
   dokku_log_verbose_quiet "Securing connection to database"
   #service_pause "$SERVICE" >/dev/null
@@ -216,7 +216,9 @@ service_create_container() {
   service_port_reconcile_status "$SERVICE"
   dokku_log_verbose_quiet "Initializing Cockroach cluster"
   "$DOCKER_BIN" container exec "$SERVICE_NAME" init --certs-dir=/cockroach/certs --host=127.0.0.1
-
+  
+  "$DOCKER_BIN" container exec -i "$SERVICE_NAME" cockroach sql --certs-dir=/cockroach/certs --host=127.0.0.1 --execute "CREATE DATABASE $DATABASE_NAME;"
+  
   dokku_log_info2 "$PLUGIN_SERVICE container created: $SERVICE"
   service_info "$SERVICE"
 }
