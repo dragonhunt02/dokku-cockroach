@@ -107,7 +107,7 @@ service_create_container() {
   local DATABASE_NAME="$(get_database_name "$SERVICE")"
   local PREVIOUS_ID
   local ADVERT_ADDR="$2"
-  [[ -z "ADVERT_ADDR" ]] && ADVERT_ADDR=127.0.0.1 && dokku_log_warn "Public advertised address not set, fallback to 127.0.0.1. Other nodes may fail connecting to cluster."
+  [[ -z "$ADVERT_ADDR" ]] && ADVERT_ADDR=127.0.0.1 && dokku_log_warn "Public advertised address not set, fallback to 127.0.0.1. Other nodes may fail connecting to cluster."
 
   if [[ -f "$SERVICE_ROOT/CONFIG_OPTIONS" ]]; then
     export CONFIG_OPTIONS="$(cat "$SERVICE_ROOT/CONFIG_OPTIONS")"
