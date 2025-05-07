@@ -14,8 +14,7 @@ service-ca-export-cmd() {
   declare desc="export service CA keys to directory and remove private key from service"
   local cmd="$PLUGIN_COMMAND_PREFIX:ca-export" argv=("$@")
   [[ ${argv[0]} == "$cmd" ]] && shift 1
-  declare SERVICE="$1"
-  declare DEST_PATH="$2"
+  declare SERVICE="$1" DEST_PATH="$2"
   declare OPT="$3"
   is_implemented_command "$cmd" || dokku_log_fail "Not yet implemented"
 
