@@ -14,13 +14,13 @@ service-ca-export-cmd() {
   declare desc="export service CA keys to directory and remove private key from service"
   local cmd="$PLUGIN_COMMAND_PREFIX:ca-export" argv=("$@")
   [[ ${argv[0]} == "$cmd" ]] && shift 1
-  declare SERVICE="$1" DEST_PATH="$2" OPTION="$3"
+  declare SERVICE="$1" DEST_PATH="$2" FLAGS="$3"
   is_implemented_command "$cmd" || dokku_log_fail "Not yet implemented"
 
   [[ -z "$SERVICE" ]] && dokku_log_fail "Please specify a valid name for the service"
   [[ ! -d "$DEST_PATH" ]] && dokku_log_fail "Please specify a valid export directory path for the service certificates"
   verify_service_name "$SERVICE"
-  service_ca_export "$SERVICE" "$DEST_PATH" "$OPTION"
+  service_ca_export "$SERVICE" "$DEST_PATH" "$FLAGS"
 }
 
 service-ca-export-cmd "$@"
