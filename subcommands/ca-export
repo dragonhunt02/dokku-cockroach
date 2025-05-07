@@ -8,8 +8,9 @@ source "$(dirname "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)")/functions"
 service-ca-export-cmd() {
   #E Export CockroachDB Certificate Authority public/private keys to directory. 
   #E > NOTE: Private key will be removed from service after export, so you won't be able to add new nodes.
-  #E dokku $PLUGIN_COMMAND_PREFIX:ca-export lollipop ./certs/path/ [ --force-copy ]
+  #E dokku $PLUGIN_COMMAND_PREFIX:ca-export lollipop ./certs/path/ [--force-copy]
   #A service, service to run command against
+  #F --force-copy, Don't remove ca.key from service after export
   declare desc="export service CA keys to directory and remove private key from service"
   local cmd="$PLUGIN_COMMAND_PREFIX:ca-export" argv=("$@")
   [[ ${argv[0]} == "$cmd" ]] && shift 1
