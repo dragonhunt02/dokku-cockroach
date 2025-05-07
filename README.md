@@ -89,11 +89,11 @@ Create a postgres service named lollipop:
 dokku postgres:create lollipop
 ```
 
-You can also specify the image and image version to use for the service. It *must* be compatible with the postgres image.
+You can also specify the image and image version to use for the service. It *must* be compatible with the cockroach image.
 
 ```shell
-export POSTGRES_IMAGE="postgres"
-export POSTGRES_IMAGE_VERSION="${PLUGIN_IMAGE_VERSION}"
+export COCKROACH_IMAGE="cockroach"
+export COCKROACH_IMAGE_VERSION="${PLUGIN_IMAGE_VERSION}"
 dokku postgres:create lollipop
 ```
 
@@ -830,6 +830,6 @@ dokku postgres:backup-unschedule lollipop
 
 ### Disabling `docker image pull` calls
 
-If you wish to disable the `docker image pull` calls that the plugin triggers, you may set the `POSTGRES_DISABLE_PULL` environment variable to `true`. Once disabled, you will need to pull the service image you wish to deploy as shown in the `stderr` output.
+If you wish to disable the `docker image pull` calls that the plugin triggers, you may set the `COCKROACH_DISABLE_PULL` environment variable to `true`. Once disabled, you will need to pull the service image you wish to deploy as shown in the `stderr` output.
 
 Please ensure the proper images are in place when `docker image pull` is disabled.
