@@ -1,6 +1,6 @@
-# dokku postgres [![Build Status](https://img.shields.io/github/actions/workflow/status/dokku/dokku-postgres/ci.yml?branch=master&style=flat-square "Build Status")](https://github.com/dokku/dokku-postgres/actions/workflows/ci.yml?query=branch%3Amaster) [![IRC Network](https://img.shields.io/badge/irc-libera-blue.svg?style=flat-square "IRC Libera")](https://webchat.libera.chat/?channels=dokku)
+# dokku cockroach
 
-Official postgres plugin for dokku. Currently defaults to installing [postgres 17.4](https://hub.docker.com/_/postgres/).
+Unofficial cockroach plugin for dokku. Currently defaults to installing [cockroachdb/cockroach v25.1.1](https://hub.docker.com/r/cockroachdb/cockroach/).
 
 ## Requirements
 
@@ -11,60 +11,63 @@ Official postgres plugin for dokku. Currently defaults to installing [postgres 1
 
 ```shell
 # on 0.19.x+
-sudo dokku plugin:install https://github.com/dokku/dokku-postgres.git --name postgres
+sudo dokku plugin:install https://github.com/dokku/dokku-cockroach.git --name cockroach
 ```
 
 ## Commands
 
 ```
-postgres:app-links <app>                           # list all postgres service links for a given app
-postgres:backup <service> <bucket-name> [--use-iam] # create a backup of the postgres service to an existing s3 bucket
-postgres:backup-auth <service> <aws-access-key-id> <aws-secret-access-key> <aws-default-region> <aws-signature-version> <endpoint-url> # set up authentication for backups on the postgres service
-postgres:backup-deauth <service>                   # remove backup authentication for the postgres service
-postgres:backup-schedule <service> <schedule> <bucket-name> [--use-iam] # schedule a backup of the postgres service
-postgres:backup-schedule-cat <service>             # cat the contents of the configured backup cronfile for the service
-postgres:backup-set-encryption <service> <passphrase> # set encryption for all future backups of postgres service
-postgres:backup-set-public-key-encryption <service> <public-key-id> # set GPG Public Key encryption for all future backups of postgres service
-postgres:backup-unschedule <service>               # unschedule the backup of the postgres service
-postgres:backup-unset-encryption <service>         # unset encryption for future backups of the postgres service
-postgres:backup-unset-public-key-encryption <service> # unset GPG Public Key encryption for future backups of the postgres service
-postgres:clone <service> <new-service> [--clone-flags...] # create container <new-name> then copy data from <name> into <new-name>
-postgres:connect <service>                         # connect to the service via the postgres connection tool
-postgres:create <service> [--create-flags...]      # create a postgres service
-postgres:destroy <service> [-f|--force]            # delete the postgres service/data/container if there are no links left
-postgres:enter <service>                           # enter or run a command in a running postgres service container
-postgres:exists <service>                          # check if the postgres service exists
-postgres:export <service>                          # export a dump of the postgres service database
-postgres:expose <service> <ports...>               # expose a postgres service on custom host:port if provided (random port on the 0.0.0.0 interface if otherwise unspecified)
-postgres:import <service>                          # import a dump into the postgres service database
-postgres:info <service> [--single-info-flag]       # print the service information
-postgres:link <service> <app> [--link-flags...]    # link the postgres service to the app
-postgres:linked <service> <app>                    # check if the postgres service is linked to an app
-postgres:links <service>                           # list all apps linked to the postgres service
-postgres:list                                      # list all postgres services
-postgres:logs <service> [-t|--tail] <tail-num-optional> # print the most recent log(s) for this service
-postgres:pause <service>                           # pause a running postgres service
-postgres:promote <service> <app>                   # promote service <service> as DATABASE_URL in <app>
-postgres:restart <service>                         # graceful shutdown and restart of the postgres service container
-postgres:set <service> <key> <value>               # set or clear a property for a service
-postgres:start <service>                           # start a previously stopped postgres service
-postgres:stop <service>                            # stop a running postgres service
-postgres:unexpose <service>                        # unexpose a previously exposed postgres service
-postgres:unlink <service> <app>                    # unlink the postgres service from the app
-postgres:upgrade <service> [--upgrade-flags...]    # upgrade service <service> to the specified versions
+cockroach:app-links <app>                          # list all cockroach service links for a given app
+cockroach:backup <service> <bucket-name> [--use-iam] # create a backup of the cockroach service to an existing s3 bucket
+cockroach:backup-auth <service> <aws-access-key-id> <aws-secret-access-key> <aws-default-region> <aws-signature-version> <endpoint-url> # set up authentication for backups on the cockroach service
+cockroach:backup-deauth <service>                  # remove backup authentication for the cockroach service
+cockroach:backup-schedule <service> <schedule> <bucket-name> [--use-iam] # schedule a backup of the cockroach service
+cockroach:backup-schedule-cat <service>            # cat the contents of the configured backup cronfile for the service
+cockroach:backup-set-encryption <service> <passphrase> # set encryption for all future backups of cockroach service
+cockroach:backup-set-public-key-encryption <service> <public-key-id> # set GPG Public Key encryption for all future backups of cockroach service
+cockroach:backup-unschedule <service>              # unschedule the backup of the cockroach service
+cockroach:backup-unset-encryption <service>        # unset encryption for future backups of the cockroach service
+cockroach:backup-unset-public-key-encryption <service> # unset GPG Public Key encryption for future backups of the cockroach service
+cockroach:ca-export <service> <dest-path> <flags>  # export service CA keys to directory and remove private key from service
+cockroach:ca-import <service> <src-path>           # import service CA keys ('ca.key' and 'ca.crt') from directory
+cockroach:clone <service> <new-service> [--clone-flags...] # create container <new-name> then copy data from <name> into <new-name>
+cockroach:connect <service> <cockroach-flags>      # connect to the service via the cockroach connection tool
+cockroach:create <service> [--create-flags...]     # create a cockroach service
+cockroach:destroy <service> [-f|--force]           # delete the cockroach service/data/container if there are no links left
+cockroach:enter <service>                          # enter or run a command in a running cockroach service container
+cockroach:exists <service>                         # check if the cockroach service exists
+cockroach:export <service>                         # export a tar dump of the cockroach service database using BACKUP
+cockroach:expose <service> <ports...>              # expose a cockroach service on custom host:port if provided (random port on the 0.0.0.0 interface if otherwise unspecified)
+cockroach:import <service>                         # import a tar dump into the cockroach service database
+cockroach:info <service> [--single-info-flag]      # print the service information
+cockroach:link <service> <app> [--link-flags...]   # link the cockroach service to the app
+cockroach:linked <service> <app>                   # check if the cockroach service is linked to an app
+cockroach:links <service>                          # list all apps linked to the cockroach service
+cockroach:list                                     # list all cockroach services
+cockroach:logs <service> [-t|--tail] <tail-num-optional> # print the most recent log(s) for this service
+cockroach:node-add <-> <->                         # import service CA keys ('ca.key' and 'ca.crt') from directory
+cockroach:pause <service>                          # pause a running cockroach service
+cockroach:promote <service> <app>                  # promote service <service> as DATABASE_URL in <app>
+cockroach:restart <service>                        # graceful shutdown and restart of the cockroach service container
+cockroach:set <service> <key> <value>              # set or clear a property for a service
+cockroach:start <service>                          # start a previously stopped cockroach service
+cockroach:stop <service>                           # stop a running cockroach service
+cockroach:unexpose <service>                       # unexpose a previously exposed cockroach service
+cockroach:unlink <service> <app>                   # unlink the cockroach service from the app
+cockroach:upgrade <service> [--upgrade-flags...]   # upgrade service <service> to the specified versions
 ```
 
 ## Usage
 
-Help for any commands can be displayed by specifying the command as an argument to postgres:help. Plugin help output in conjunction with any files in the `docs/` folder is used to generate the plugin documentation. Please consult the `postgres:help` command for any undocumented commands.
+Help for any commands can be displayed by specifying the command as an argument to cockroach:help. Plugin help output in conjunction with any files in the `docs/` folder is used to generate the plugin documentation. Please consult the `cockroach:help` command for any undocumented commands.
 
 ### Basic Usage
 
-### create a postgres service
+### create a cockroach service
 
 ```shell
 # usage
-dokku postgres:create <service> [--create-flags...]
+dokku cockroach:create <service> [--create-flags...]
 ```
 
 flags:
@@ -79,48 +82,34 @@ flags:
 - `-P|--post-create-network NETWORKS`: a comma-separated list of networks to attach the service container to after service creation
 - `-r|--root-password PASSWORD`: override the root-level service password
 - `-S|--post-start-network NETWORKS`: a comma-separated list of networks to attach the service container to after service start
-- `-s|--shm-size SHM_SIZE`: override shared memory size for postgres docker container
+- `-s|--shm-size SHM_SIZE`: override shared memory size for cockroach docker container
 
-Create a postgres service named lollipop:
+Create a cockroach service named lollipop:
 
 ```shell
-dokku postgres:create lollipop
+dokku cockroach:create lollipop
 ```
 
-You can also specify the image and image version to use for the service. It *must* be compatible with the postgres image.
+You can also specify the image and image version to use for the service. It *must* be compatible with the cockroachdb/cockroach image.
 
 ```shell
-export POSTGRES_IMAGE="postgres"
-export POSTGRES_IMAGE_VERSION="${PLUGIN_IMAGE_VERSION}"
-dokku postgres:create lollipop
+export COCKROACH_IMAGE="cockroachdb/cockroach"
+export COCKROACH_IMAGE_VERSION="${PLUGIN_IMAGE_VERSION}"
+dokku cockroach:create lollipop
 ```
 
-You can also specify custom environment variables to start the postgres service in semicolon-separated form.
+You can also specify custom environment variables to start the cockroach service in semicolon-separated form.
 
 ```shell
-export POSTGRES_CUSTOM_ENV="USER=alpha;HOST=beta"
-dokku postgres:create lollipop
-```
-
-Official Postgres "$DOCKER_BIN" image ls does not include postgis extension (amongst others). The following example creates a new postgres service using `postgis/postgis:13-3.1` image, which includes the `postgis` extension.
-
-```shell
-# use the appropriate image-version for your use-case
-dokku postgres:create postgis-database --image "postgis/postgis" --image-version "13-3.1"
-```
-
-To use pgvector instead, run the following:
-
-```shell
-# use the appropriate image-version for your use-case
-dokku postgres:create pgvector-database --image "pgvector/pgvector" --image-version "pg17"
+export COCKROACH_CUSTOM_ENV="USER=alpha;HOST=beta"
+dokku cockroach:create lollipop
 ```
 
 ### print the service information
 
 ```shell
 # usage
-dokku postgres:info <service> [--single-info-flag]
+dokku cockroach:info <service> [--single-info-flag]
 ```
 
 flags:
@@ -142,45 +131,45 @@ flags:
 Get connection information as follows:
 
 ```shell
-dokku postgres:info lollipop
+dokku cockroach:info lollipop
 ```
 
 You can also retrieve a specific piece of service info via flags:
 
 ```shell
-dokku postgres:info lollipop --config-dir
-dokku postgres:info lollipop --data-dir
-dokku postgres:info lollipop --dsn
-dokku postgres:info lollipop --exposed-ports
-dokku postgres:info lollipop --id
-dokku postgres:info lollipop --internal-ip
-dokku postgres:info lollipop --initial-network
-dokku postgres:info lollipop --links
-dokku postgres:info lollipop --post-create-network
-dokku postgres:info lollipop --post-start-network
-dokku postgres:info lollipop --service-root
-dokku postgres:info lollipop --status
-dokku postgres:info lollipop --version
+dokku cockroach:info lollipop --config-dir
+dokku cockroach:info lollipop --data-dir
+dokku cockroach:info lollipop --dsn
+dokku cockroach:info lollipop --exposed-ports
+dokku cockroach:info lollipop --id
+dokku cockroach:info lollipop --internal-ip
+dokku cockroach:info lollipop --initial-network
+dokku cockroach:info lollipop --links
+dokku cockroach:info lollipop --post-create-network
+dokku cockroach:info lollipop --post-start-network
+dokku cockroach:info lollipop --service-root
+dokku cockroach:info lollipop --status
+dokku cockroach:info lollipop --version
 ```
 
-### list all postgres services
+### list all cockroach services
 
 ```shell
 # usage
-dokku postgres:list
+dokku cockroach:list
 ```
 
 List all services:
 
 ```shell
-dokku postgres:list
+dokku cockroach:list
 ```
 
 ### print the most recent log(s) for this service
 
 ```shell
 # usage
-dokku postgres:logs <service> [-t|--tail] <tail-num-optional>
+dokku cockroach:logs <service> [-t|--tail] <tail-num-optional>
 ```
 
 flags:
@@ -190,26 +179,26 @@ flags:
 You can tail logs for a particular service:
 
 ```shell
-dokku postgres:logs lollipop
+dokku cockroach:logs lollipop
 ```
 
 By default, logs will not be tailed, but you can do this with the --tail flag:
 
 ```shell
-dokku postgres:logs lollipop --tail
+dokku cockroach:logs lollipop --tail
 ```
 
 The default tail setting is to show all logs, but an initial count can also be specified:
 
 ```shell
-dokku postgres:logs lollipop --tail 5
+dokku cockroach:logs lollipop --tail 5
 ```
 
-### link the postgres service to the app
+### link the cockroach service to the app
 
 ```shell
 # usage
-dokku postgres:link <service> <app> [--link-flags...]
+dokku cockroach:link <service> <app> [--link-flags...]
 ```
 
 flags:
@@ -218,118 +207,125 @@ flags:
 - `-q|--querystring "pool=5"`: ampersand delimited querystring arguments to append to the service link
 - `-n|--no-restart "false"`: whether or not to restart the app on link (default: true)
 
-A postgres service can be linked to a container. This will use native docker links via the docker-options plugin. Here we link it to our `playground` app.
+A cockroach service can be linked to a container. This will use native docker links via the docker-options plugin. Here we link it to our `playground` app.
 
 > NOTE: this will restart your app
 
 ```shell
-dokku postgres:link lollipop playground
+dokku cockroach:link lollipop playground
 ```
 
 The following environment variables will be set automatically by docker (not on the app itself, so they won’t be listed when calling dokku config):
 
 ```
-DOKKU_POSTGRES_LOLLIPOP_NAME=/lollipop/DATABASE
-DOKKU_POSTGRES_LOLLIPOP_PORT=tcp://172.17.0.1:5432
-DOKKU_POSTGRES_LOLLIPOP_PORT_5432_TCP=tcp://172.17.0.1:5432
-DOKKU_POSTGRES_LOLLIPOP_PORT_5432_TCP_PROTO=tcp
-DOKKU_POSTGRES_LOLLIPOP_PORT_5432_TCP_PORT=5432
-DOKKU_POSTGRES_LOLLIPOP_PORT_5432_TCP_ADDR=172.17.0.1
+DOKKU_COCKROACH_LOLLIPOP_NAME=/lollipop/DATABASE
+DOKKU_COCKROACH_LOLLIPOP_PORT=tcp://172.17.0.1:26257
+DOKKU_COCKROACH_LOLLIPOP_PORT_26257_TCP=tcp://172.17.0.1:26257
+DOKKU_COCKROACH_LOLLIPOP_PORT_26257_TCP_PROTO=tcp
+DOKKU_COCKROACH_LOLLIPOP_PORT_26257_TCP_PORT=26257
+DOKKU_COCKROACH_LOLLIPOP_PORT_26257_TCP_ADDR=172.17.0.1
 ```
 
 The following will be set on the linked application by default:
 
 ```
-DATABASE_URL=postgres://lollipop:SOME_PASSWORD@dokku-postgres-lollipop:5432/lollipop
+DATABASE_URL=postgres://lollipop:SOME_PASSWORD@dokku-cockroach-lollipop:26257/lollipop
 ```
 
 The host exposed here only works internally in docker containers. If you want your container to be reachable from outside, you should use the `expose` subcommand. Another service can be linked to your app:
 
 ```shell
-dokku postgres:link other_service playground
+dokku cockroach:link other_service playground
 ```
 
-It is possible to change the protocol for `DATABASE_URL` by setting the environment variable `POSTGRES_DATABASE_SCHEME` on the app. Doing so will after linking will cause the plugin to think the service is not linked, and we advise you to unlink before proceeding.
+It is possible to change the protocol for `DATABASE_URL` by setting the environment variable `COCKROACH_DATABASE_SCHEME` on the app. Doing so will after linking will cause the plugin to think the service is not linked, and we advise you to unlink before proceeding.
 
 ```shell
-dokku config:set playground POSTGRES_DATABASE_SCHEME=postgres2
-dokku postgres:link lollipop playground
+dokku config:set playground COCKROACH_DATABASE_SCHEME=postgres2
+dokku cockroach:link lollipop playground
 ```
 
 This will cause `DATABASE_URL` to be set as:
 
 ```
-postgres2://lollipop:SOME_PASSWORD@dokku-postgres-lollipop:5432/lollipop
+postgres2://lollipop:SOME_PASSWORD@dokku-cockroach-lollipop:26257/lollipop
 ```
 
-### unlink the postgres service from the app
+### unlink the cockroach service from the app
 
 ```shell
 # usage
-dokku postgres:unlink <service> <app>
+dokku cockroach:unlink <service> <app>
 ```
 
 flags:
 
 - `-n|--no-restart "false"`: whether or not to restart the app on unlink (default: true)
 
-You can unlink a postgres service:
+You can unlink a cockroach service:
 
 > NOTE: this will restart your app and unset related environment variables
 
 ```shell
-dokku postgres:unlink lollipop playground
+dokku cockroach:unlink lollipop playground
 ```
 
 ### set or clear a property for a service
 
 ```shell
 # usage
-dokku postgres:set <service> <key> <value>
+dokku cockroach:set <service> <key> <value>
 ```
 
 Set the network to attach after the service container is started:
 
 ```shell
-dokku postgres:set lollipop post-create-network custom-network
+dokku cockroach:set lollipop post-create-network custom-network
 ```
 
 Set multiple networks:
 
 ```shell
-dokku postgres:set lollipop post-create-network custom-network,other-network
+dokku cockroach:set lollipop post-create-network custom-network,other-network
 ```
 
 Unset the post-create-network value:
 
 ```shell
-dokku postgres:set lollipop post-create-network
+dokku cockroach:set lollipop post-create-network
 ```
 
 ### Service Lifecycle
 
 The lifecycle of each service can be managed through the following commands:
 
-### connect to the service via the postgres connection tool
+### connect to the service via the cockroach connection tool
 
 ```shell
 # usage
-dokku postgres:connect <service>
+dokku cockroach:connect <service> <cockroach-flags>
 ```
 
-Connect to the service via the postgres connection tool:
+Connect to the service via the cockroach sql connection tool:
 
 > NOTE: disconnecting from ssh while running this command may leave zombie processes due to moby/moby#9098
 
 ```shell
-dokku postgres:connect lollipop
+dokku cockroach:connect lollipop [--cockroach-flags...]
 ```
 
-### enter or run a command in a running postgres service container
+You can also pass additional arguments to `cockroach sql` console
+
+```shell
+# Example to allow 'DROP DATABASE...' and similar unsafe operations
+dokku cockroach:connect lollipop --safe-updates=false
+```
+
+### enter or run a command in a running cockroach service container
 
 ```shell
 # usage
-dokku postgres:enter <service>
+dokku cockroach:enter <service>
 ```
 
 A bash prompt can be opened against a running service. Filesystem changes will not be saved to disk.
@@ -337,58 +333,58 @@ A bash prompt can be opened against a running service. Filesystem changes will n
 > NOTE: disconnecting from ssh while running this command may leave zombie processes due to moby/moby#9098
 
 ```shell
-dokku postgres:enter lollipop
+dokku cockroach:enter lollipop
 ```
 
 You may also run a command directly against the service. Filesystem changes will not be saved to disk.
 
 ```shell
-dokku postgres:enter lollipop touch /tmp/test
+dokku cockroach:enter lollipop touch /tmp/test
 ```
 
-### expose a postgres service on custom host:port if provided (random port on the 0.0.0.0 interface if otherwise unspecified)
+### expose a cockroach service on custom host:port if provided (random port on the 0.0.0.0 interface if otherwise unspecified)
 
 ```shell
 # usage
-dokku postgres:expose <service> <ports...>
+dokku cockroach:expose <service> <ports...>
 ```
 
 Expose the service on the service's normal ports, allowing access to it from the public interface (`0.0.0.0`):
 
 ```shell
-dokku postgres:expose lollipop 5432
+dokku cockroach:expose lollipop 26257 8080
 ```
 
 Expose the service on the service's normal ports, with the first on a specified ip address (127.0.0.1):
 
 ```shell
-dokku postgres:expose lollipop 127.0.0.1:5432
+dokku cockroach:expose lollipop 127.0.0.1:26257 8080
 ```
 
-### unexpose a previously exposed postgres service
+### unexpose a previously exposed cockroach service
 
 ```shell
 # usage
-dokku postgres:unexpose <service>
+dokku cockroach:unexpose <service>
 ```
 
 Unexpose the service, removing access to it from the public interface (`0.0.0.0`):
 
 ```shell
-dokku postgres:unexpose lollipop
+dokku cockroach:unexpose lollipop
 ```
 
 ### promote service <service> as DATABASE_URL in <app>
 
 ```shell
 # usage
-dokku postgres:promote <service> <app>
+dokku cockroach:promote <service> <app>
 ```
 
-If you have a postgres service linked to an app and try to link another postgres service another link environment variable will be generated automatically:
+If you have a cockroach service linked to an app and try to link another cockroach service another link environment variable will be generated automatically:
 
 ```
-DOKKU_DATABASE_BLUE_URL=postgres://other_service:ANOTHER_PASSWORD@dokku-postgres-other-service:5432/other_service
+DOKKU_DATABASE_BLUE_URL=postgres://other_service:ANOTHER_PASSWORD@dokku-cockroach-other-service:26257/other_service
 ```
 
 You can promote the new service to be the primary one:
@@ -396,74 +392,74 @@ You can promote the new service to be the primary one:
 > NOTE: this will restart your app
 
 ```shell
-dokku postgres:promote other_service playground
+dokku cockroach:promote other_service playground
 ```
 
 This will replace `DATABASE_URL` with the url from other_service and generate another environment variable to hold the previous value if necessary. You could end up with the following for example:
 
 ```
-DATABASE_URL=postgres://other_service:ANOTHER_PASSWORD@dokku-postgres-other-service:5432/other_service
-DOKKU_DATABASE_BLUE_URL=postgres://other_service:ANOTHER_PASSWORD@dokku-postgres-other-service:5432/other_service
-DOKKU_DATABASE_SILVER_URL=postgres://lollipop:SOME_PASSWORD@dokku-postgres-lollipop:5432/lollipop
+DATABASE_URL=postgres://other_service:ANOTHER_PASSWORD@dokku-cockroach-other-service:26257/other_service
+DOKKU_DATABASE_BLUE_URL=postgres://other_service:ANOTHER_PASSWORD@dokku-cockroach-other-service:26257/other_service
+DOKKU_DATABASE_SILVER_URL=postgres://lollipop:SOME_PASSWORD@dokku-cockroach-lollipop:26257/lollipop
 ```
 
-### start a previously stopped postgres service
+### start a previously stopped cockroach service
 
 ```shell
 # usage
-dokku postgres:start <service>
+dokku cockroach:start <service>
 ```
 
 Start the service:
 
 ```shell
-dokku postgres:start lollipop
+dokku cockroach:start lollipop
 ```
 
-### stop a running postgres service
+### stop a running cockroach service
 
 ```shell
 # usage
-dokku postgres:stop <service>
+dokku cockroach:stop <service>
 ```
 
 Stop the service and removes the running container:
 
 ```shell
-dokku postgres:stop lollipop
+dokku cockroach:stop lollipop
 ```
 
-### pause a running postgres service
+### pause a running cockroach service
 
 ```shell
 # usage
-dokku postgres:pause <service>
+dokku cockroach:pause <service>
 ```
 
 Pause the running container for the service:
 
 ```shell
-dokku postgres:pause lollipop
+dokku cockroach:pause lollipop
 ```
 
-### graceful shutdown and restart of the postgres service container
+### graceful shutdown and restart of the cockroach service container
 
 ```shell
 # usage
-dokku postgres:restart <service>
+dokku cockroach:restart <service>
 ```
 
 Restart the service:
 
 ```shell
-dokku postgres:restart lollipop
+dokku cockroach:restart lollipop
 ```
 
 ### upgrade service <service> to the specified versions
 
 ```shell
 # usage
-dokku postgres:upgrade <service> [--upgrade-flags...]
+dokku cockroach:upgrade <service> [--upgrade-flags...]
 ```
 
 flags:
@@ -476,67 +472,36 @@ flags:
 - `-P|--post-create-network NETWORKS`: a comma-separated list of networks to attach the service container to after service creation
 - `-R|--restart-apps "true"`: whether or not to force an app restart (default: false)
 - `-S|--post-start-network NETWORKS`: a comma-separated list of networks to attach the service container to after service start
-- `-s|--shm-size SHM_SIZE`: override shared memory size for postgres docker container
+- `-s|--shm-size SHM_SIZE`: override shared memory size for cockroach docker container
 
 You can upgrade an existing service to a new image or image-version:
 
 ```shell
-dokku postgres:upgrade lollipop
-```
-
-Postgres does not handle upgrading data for major versions automatically (eg. 11 => 12). Upgrades should be done manually. Users are encouraged to upgrade to the latest minor release for their postgres version before performing a major upgrade.
-
-While there are many ways to upgrade a postgres database, for safety purposes, it is recommended that an upgrade is performed by exporting the data from an existing database and importing it into a new database. This also allows testing to ensure that applications interact with the database correctly after the upgrade, and can be used in a staging environment.
-
-The following is an example of how to upgrade a postgres database named `lollipop-11` from 11.13 to 12.8.
-
-```shell
-# stop any linked apps
-dokku ps:stop linked-app
-
-# export the database contents
-dokku postgres:export lollipop-11 > /tmp/lollipop-11.export
-
-# create a new database at the desired version
-dokku postgres:create lollipop-12 --image-version 12.8
-
-# import the export file
-dokku postgres:import lollipop-12 < /tmp/lollipop-11.export
-
-# run any sql tests against the new database to verify the import went smoothly
-
-# unlink the old database from your apps
-dokku postgres:unlink lollipop-11 linked-app
-
-# link the new database to your apps
-dokku postgres:link lollipop-12 linked-app
-
-# start the linked apps again
-dokku ps:start linked-app
+dokku cockroach:upgrade lollipop
 ```
 
 ### Service Automation
 
 Service scripting can be executed using the following commands:
 
-### list all postgres service links for a given app
+### list all cockroach service links for a given app
 
 ```shell
 # usage
-dokku postgres:app-links <app>
+dokku cockroach:app-links <app>
 ```
 
-List all postgres services that are linked to the `playground` app.
+List all cockroach services that are linked to the `playground` app.
 
 ```shell
-dokku postgres:app-links playground
+dokku cockroach:app-links playground
 ```
 
 ### create container <new-name> then copy data from <name> into <new-name>
 
 ```shell
 # usage
-dokku postgres:clone <service> <new-service> [--clone-flags...]
+dokku cockroach:clone <service> <new-service> [--clone-flags...]
 ```
 
 flags:
@@ -551,93 +516,127 @@ flags:
 - `-P|--post-create-network NETWORKS`: a comma-separated list of networks to attach the service container to after service creation
 - `-r|--root-password PASSWORD`: override the root-level service password
 - `-S|--post-start-network NETWORKS`: a comma-separated list of networks to attach the service container to after service start
-- `-s|--shm-size SHM_SIZE`: override shared memory size for postgres docker container
+- `-s|--shm-size SHM_SIZE`: override shared memory size for cockroach docker container
 
 You can clone an existing service to a new one:
 
 ```shell
-dokku postgres:clone lollipop lollipop-2
+dokku cockroach:clone lollipop lollipop-2
 ```
 
-### check if the postgres service exists
+### check if the cockroach service exists
 
 ```shell
 # usage
-dokku postgres:exists <service>
+dokku cockroach:exists <service>
 ```
 
-Here we check if the lollipop postgres service exists.
+Here we check if the lollipop cockroach service exists.
 
 ```shell
-dokku postgres:exists lollipop
+dokku cockroach:exists lollipop
 ```
 
-### check if the postgres service is linked to an app
-
-```shell
-# usage
-dokku postgres:linked <service> <app>
-```
-
-Here we check if the lollipop postgres service is linked to the `playground` app.
-
-```shell
-dokku postgres:linked lollipop playground
-```
-
-### list all apps linked to the postgres service
+### check if the cockroach service is linked to an app
 
 ```shell
 # usage
-dokku postgres:links <service>
+dokku cockroach:linked <service> <app>
 ```
 
-List all apps linked to the `lollipop` postgres service.
+Here we check if the lollipop cockroach service is linked to the `playground` app.
 
 ```shell
-dokku postgres:links lollipop
+dokku cockroach:linked lollipop playground
+```
+
+### list all apps linked to the cockroach service
+
+```shell
+# usage
+dokku cockroach:links <service>
+```
+
+List all apps linked to the `lollipop` cockroach service.
+
+```shell
+dokku cockroach:links lollipop
 ```
 
 ### Data Management
 
 The underlying service data can be imported and exported with the following commands:
 
-### import a dump into the postgres service database
+### import service CA keys ('ca.key' and 'ca.crt') from directory
 
 ```shell
 # usage
-dokku postgres:import <service>
+dokku cockroach:ca-import <service> <src-path>
+```
+
+Import CockroachDB Certificate Authority public/private keys from directory.
+
+> NOTE: All existing service certificates will be removed and regenerated using imported 'ca.key'.
+
+```shell
+dokku cockroach:ca-import lollipop ./certs/path/
+```
+
+### export service CA keys to directory and remove private key from service
+
+```shell
+# usage
+dokku cockroach:ca-export <service> <dest-path> <flags>
+```
+
+flags:
+
+- `--force-copy`: Don't remove ca.key private key from service after export
+
+Export CockroachDB Certificate Authority public/private keys to directory.
+
+> NOTE: Private key will be removed from service after export, so you won't be able to add new nodes.
+
+```shell
+dokku cockroach:ca-export lollipop ./certs/path/ [--force-copy]
+```
+
+### import a tar dump into the cockroach service database
+
+```shell
+# usage
+dokku cockroach:import <service>
 ```
 
 Import a datastore dump:
 
 ```shell
-dokku postgres:import lollipop < data.dump
+dokku cockroach:import lollipop < data.tar
 ```
 
-### export a dump of the postgres service database
+### export a tar dump of the cockroach service database using BACKUP
 
 ```shell
 # usage
-dokku postgres:export <service>
+dokku cockroach:export <service>
 ```
 
 By default, datastore output is exported to stdout:
 
 ```shell
-dokku postgres:export lollipop
+dokku cockroach:export lollipop
 ```
 
 You can redirect this output to a file:
 
 ```shell
-dokku postgres:export lollipop > data.dump
+dokku cockroach:export lollipop > data.tar
 ```
 
-Note that the export will result in a file containing the binary postgres export data. It can be converted to plain text using `pg_restore` as follows
+Note that the export will result in a `.tar` file containing a CockroachDB `BACKUP` data. It can be converted to original format as follows
 
 ```shell
-pg_restore data.dump -f plain.sql
+tar -xvf data.tar
 ```
 
 ### Backups
@@ -648,55 +647,55 @@ You may skip the `backup-auth` step if your dokku install is running within EC2 
 
 Backups can be performed using the backup commands:
 
-### set up authentication for backups on the postgres service
+### set up authentication for backups on the cockroach service
 
 ```shell
 # usage
-dokku postgres:backup-auth <service> <aws-access-key-id> <aws-secret-access-key> <aws-default-region> <aws-signature-version> <endpoint-url>
+dokku cockroach:backup-auth <service> <aws-access-key-id> <aws-secret-access-key> <aws-default-region> <aws-signature-version> <endpoint-url>
 ```
 
 Setup s3 backup authentication:
 
 ```shell
-dokku postgres:backup-auth lollipop AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY
+dokku cockroach:backup-auth lollipop AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY
 ```
 
 Setup s3 backup authentication with different region:
 
 ```shell
-dokku postgres:backup-auth lollipop AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_REGION
+dokku cockroach:backup-auth lollipop AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_REGION
 ```
 
 Setup s3 backup authentication with different signature version and endpoint:
 
 ```shell
-dokku postgres:backup-auth lollipop AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_REGION AWS_SIGNATURE_VERSION ENDPOINT_URL
+dokku cockroach:backup-auth lollipop AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_REGION AWS_SIGNATURE_VERSION ENDPOINT_URL
 ```
 
 More specific example for minio auth:
 
 ```shell
-dokku postgres:backup-auth lollipop MINIO_ACCESS_KEY_ID MINIO_SECRET_ACCESS_KEY us-east-1 s3v4 https://YOURMINIOSERVICE
+dokku cockroach:backup-auth lollipop MINIO_ACCESS_KEY_ID MINIO_SECRET_ACCESS_KEY us-east-1 s3v4 https://YOURMINIOSERVICE
 ```
 
-### remove backup authentication for the postgres service
+### remove backup authentication for the cockroach service
 
 ```shell
 # usage
-dokku postgres:backup-deauth <service>
+dokku cockroach:backup-deauth <service>
 ```
 
 Remove s3 authentication:
 
 ```shell
-dokku postgres:backup-deauth lollipop
+dokku cockroach:backup-deauth lollipop
 ```
 
-### create a backup of the postgres service to an existing s3 bucket
+### create a backup of the cockroach service to an existing s3 bucket
 
 ```shell
 # usage
-dokku postgres:backup <service> <bucket-name> [--use-iam]
+dokku cockroach:backup <service> <bucket-name> [--use-iam]
 ```
 
 flags:
@@ -706,72 +705,72 @@ flags:
 Backup the `lollipop` service to the `my-s3-bucket` bucket on `AWS`:`
 
 ```shell
-dokku postgres:backup lollipop my-s3-bucket --use-iam
+dokku cockroach:backup lollipop my-s3-bucket --use-iam
 ```
 
 Restore a backup file (assuming it was extracted via `tar -xf backup.tgz`):
 
 ```shell
-dokku postgres:import lollipop < backup-folder/export
+dokku cockroach:import lollipop < backup-folder/export
 ```
 
-### set encryption for all future backups of postgres service
+### set encryption for all future backups of cockroach service
 
 ```shell
 # usage
-dokku postgres:backup-set-encryption <service> <passphrase>
+dokku cockroach:backup-set-encryption <service> <passphrase>
 ```
 
 Set the GPG-compatible passphrase for encrypting backups for backups:
 
 ```shell
-dokku postgres:backup-set-encryption lollipop
+dokku cockroach:backup-set-encryption lollipop
 ```
 
-### set GPG Public Key encryption for all future backups of postgres service
+### set GPG Public Key encryption for all future backups of cockroach service
 
 ```shell
 # usage
-dokku postgres:backup-set-public-key-encryption <service> <public-key-id>
+dokku cockroach:backup-set-public-key-encryption <service> <public-key-id>
 ```
 
 Set the `GPG` Public Key for encrypting backups:
 
 ```shell
-dokku postgres:backup-set-public-key-encryption lollipop
+dokku cockroach:backup-set-public-key-encryption lollipop
 ```
 
-### unset encryption for future backups of the postgres service
+### unset encryption for future backups of the cockroach service
 
 ```shell
 # usage
-dokku postgres:backup-unset-encryption <service>
+dokku cockroach:backup-unset-encryption <service>
 ```
 
 Unset the `GPG` encryption passphrase for backups:
 
 ```shell
-dokku postgres:backup-unset-encryption lollipop
+dokku cockroach:backup-unset-encryption lollipop
 ```
 
-### unset GPG Public Key encryption for future backups of the postgres service
+### unset GPG Public Key encryption for future backups of the cockroach service
 
 ```shell
 # usage
-dokku postgres:backup-unset-public-key-encryption <service>
+dokku cockroach:backup-unset-public-key-encryption <service>
 ```
 
 Unset the `GPG` Public Key encryption for backups:
 
 ```shell
-dokku postgres:backup-unset-public-key-encryption lollipop
+dokku cockroach:backup-unset-public-key-encryption lollipop
 ```
 
-### schedule a backup of the postgres service
+### schedule a backup of the cockroach service
 
 ```shell
 # usage
-dokku postgres:backup-schedule <service> <schedule> <bucket-name> [--use-iam]
+dokku cockroach:backup-schedule <service> <schedule> <bucket-name> [--use-iam]
 ```
 
 flags:
@@ -783,43 +782,43 @@ Schedule a backup:
 > 'schedule' is a crontab expression, eg. "0 3 * * *" for each day at 3am
 
 ```shell
-dokku postgres:backup-schedule lollipop "0 3 * * *" my-s3-bucket
+dokku cockroach:backup-schedule lollipop "0 3 * * *" my-s3-bucket
 ```
 
 Schedule a backup and authenticate via iam:
 
 ```shell
-dokku postgres:backup-schedule lollipop "0 3 * * *" my-s3-bucket --use-iam
+dokku cockroach:backup-schedule lollipop "0 3 * * *" my-s3-bucket --use-iam
 ```
 
 ### cat the contents of the configured backup cronfile for the service
 
 ```shell
 # usage
-dokku postgres:backup-schedule-cat <service>
+dokku cockroach:backup-schedule-cat <service>
 ```
 
 Cat the contents of the configured backup cronfile for the service:
 
 ```shell
-dokku postgres:backup-schedule-cat lollipop
+dokku cockroach:backup-schedule-cat lollipop
 ```
 
-### unschedule the backup of the postgres service
+### unschedule the backup of the cockroach service
 
 ```shell
 # usage
-dokku postgres:backup-unschedule <service>
+dokku cockroach:backup-unschedule <service>
 ```
 
 Remove the scheduled backup from cron:
 
 ```shell
-dokku postgres:backup-unschedule lollipop
+dokku cockroach:backup-unschedule lollipop
 ```
 
 ### Disabling `docker image pull` calls
 
-If you wish to disable the `docker image pull` calls that the plugin triggers, you may set the `POSTGRES_DISABLE_PULL` environment variable to `true`. Once disabled, you will need to pull the service image you wish to deploy as shown in the `stderr` output.
+If you wish to disable the `docker image pull` calls that the plugin triggers, you may set the `COCKROACH_DISABLE_PULL` environment variable to `true`. Once disabled, you will need to pull the service image you wish to deploy as shown in the `stderr` output.
 
 Please ensure the proper images are in place when `docker image pull` is disabled.

@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+source "$(dirname "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)")/config"
+set -eo pipefail
+[[ $DOKKU_TRACE ]] && set -x
+source "$PLUGIN_CORE_AVAILABLE_PATH/common/functions"
+source "$(dirname "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)")/functions"
+
+service-ca-import-cmd() {
+  #E Import CockroachDB Certificate Authority public/private keys from directory.
+  #E > NOTE: All existing service certificates will be removed and regenerated using imported 'ca.key'.
+  #E dokku $PLUGIN_COMMAND_PREFIX:ca-import lollipop ./certs/path/
+  #A service, service to run command against
+  declare desc="import service CA keys ('ca.key' and 'ca.crt') from directory"
+  local cmd="$PLUGIN_COMMAND_PREFIX:ca-export" argv=("$@")
+  [[ ${argv[0]} == "$cmd" ]] && shift 1
+  declare SERVICE="$1" SRC_PATH="$2"
+  is_implemented_command "$cmd" || dokku_log_fail "Not yet implemented"
+
+  [[ -z "$SERVICE" ]] && dokku_log_fail "Please specify a valid name for the service"
+  [[ ! -d "$SRC_PATH" ]] && dokku_log_fail "Please specify a valid import directory path for the service certificates"
+  [[ ! -f "$SRC_PATH/ca.key" ]] && dokku_log_fail "Can't find ca.key in directory $SRC_PATH"
+  [[ ! -f "$SRC_PATH/ca.crt" ]] && dokku_log_fail "Can't find ca.crt in directory $SRC_PATH"
+
+  verify_service_name "$SERVICE"
+  service_ca_import "$SERVICE" "$SRC_PATH"
+}
+
+service-ca-import-cmd "$@"

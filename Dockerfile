@@ -1,1 +1,1 @@
-FROM postgres:17.4
+FROM cockroachdb/cockroach:v25.1.1
