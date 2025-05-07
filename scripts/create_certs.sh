@@ -20,6 +20,9 @@ echo "Generating node certificates..."
 cockroach cert create-node localhost 127.0.0.1 $(hostname) --certs-dir=${CERTS_DIR} --ca-key=${CERTS_DIR}/ca.key
 cockroach cert create-client root --certs-dir=${CERTS_DIR} --ca-key=${CERTS_DIR}/ca.key
 
-cat /etc/passwd || true
+#cat /etc/passwd || true
+echo "File owner key: $(stat -c '%U' $CERTS_DIR/ca.key)"
+echo "File owner crt: $(stat -c '%U' $CERTS_DIR/ca.crt)"
+echo "Current user: $(whoami)"
 #chown -R cockroach:cockroach $CERTS_DIR
 chmod -R 600 $CERTS_DIR
