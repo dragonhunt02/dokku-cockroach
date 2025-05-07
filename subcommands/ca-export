@@ -21,7 +21,7 @@ service-ca-export-cmd() {
   [[ -z "$SERVICE" ]] && dokku_log_fail "Please specify a valid name for the service"
   [[ ! -d "$DEST_PATH" ]] && dokku_log_fail "Please specify a valid export directory path for the service certificates"
   verify_service_name "$SERVICE"
-  service_ca_export "$1" "$2" "$3"
+  service_ca_export "$SERVICE" "$DEST_PATH" "$OPT"
 }
 
 service-ca-export-cmd "$@"
