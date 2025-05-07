@@ -260,7 +260,7 @@ def usage_automation(
 def usage_data_management(
     service, variable, alias, image, scheme, ports, options, unimplemented
 ):
-    commands = ["import", "export"]
+    commands = ["ca-import", "ca-export", "import", "export"]
     content = [
         "### Data Management",
         "",
