@@ -13,8 +13,7 @@ service-ca-import-cmd() {
   declare desc="import service CA keys ('ca.key' and 'ca.crt') from directory"
   local cmd="$PLUGIN_COMMAND_PREFIX:ca-export" argv=("$@")
   [[ ${argv[0]} == "$cmd" ]] && shift 1
-  declare SERVICE="$1"
-  declare SRC_PATH="$2"
+  declare SERVICE="$1" SRC_PATH="$2"
   is_implemented_command "$cmd" || dokku_log_fail "Not yet implemented"
 
   [[ -z "$SERVICE" ]] && dokku_log_fail "Please specify a valid name for the service"
@@ -23,7 +22,7 @@ service-ca-import-cmd() {
   [[ ! -f "$SRC_PATH/ca.crt" ]] && dokku_log_fail "Can't find ca.crt in directory $SRC_PATH"
 
   verify_service_name "$SERVICE"
-  service_ca_import "$1" "$2"
+  service_ca_import "$SERVICE" "$SRC_PATH"
 }
 
 service-ca-import-cmd "$@"
