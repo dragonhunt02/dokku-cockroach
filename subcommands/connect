@@ -18,7 +18,7 @@ service-connect-cmd() {
 
   [[ -z "$SERVICE" ]] && dokku_log_fail "Please specify a valid name for the service"
   verify_service_name "$SERVICE"
-  service_connect "$SERVICE" "$COCKROACH_FLAGS"
+  service_connect "$SERVICE" $COCKROACH_FLAGS
 }
 
 service-connect-cmd "$@"
