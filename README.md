@@ -1,6 +1,6 @@
-# dokku cockroach [![Build Status](https://img.shields.io/github/actions/workflow/status/dokku/dokku-cockroach/ci.yml?branch=master&style=flat-square "Build Status")](https://github.com/dokku/dokku-cockroach/actions/workflows/ci.yml?query=branch%3Amaster) [![IRC Network](https://img.shields.io/badge/irc-libera-blue.svg?style=flat-square "IRC Libera")](https://webchat.libera.chat/?channels=dokku)
+# dokku cockroach
 
-Official cockroach plugin for dokku. Currently defaults to installing [cockroachdb/cockroach v25.1.1](https://hub.docker.com/r/cockroachdb/cockroach/).
+Unofficial cockroach plugin for dokku. Currently defaults to installing [cockroachdb/cockroach v25.1.1](https://hub.docker.com/r/cockroachdb/cockroach/).
 
 ## Requirements
 
@@ -28,10 +28,10 @@ cockroach:backup-set-public-key-encryption <service> <public-key-id> # set GPG P
 cockroach:backup-unschedule <service>              # unschedule the backup of the cockroach service
 cockroach:backup-unset-encryption <service>        # unset encryption for future backups of the cockroach service
 cockroach:backup-unset-public-key-encryption <service> # unset GPG Public Key encryption for future backups of the cockroach service
-cockroach:ca-export <-> <->                        # export service CA keys to directory and remove private key from service
-cockroach:ca-import <-> <->                        # import service CA keys ('ca.key' and 'ca.crt') from directory
+cockroach:ca-export <service> <dest-path> <flags>  # export service CA keys to directory and remove private key from service
+cockroach:ca-import <service> <src-path>           # import service CA keys ('ca.key' and 'ca.crt') from directory
 cockroach:clone <service> <new-service> [--clone-flags...] # create container <new-name> then copy data from <name> into <new-name>
-cockroach:connect <service>                        # connect to the service via the cockroach connection tool
+cockroach:connect <service> <cockroach-flags>      # connect to the service via the cockroach connection tool
 cockroach:create <service> [--create-flags...]     # create a cockroach service
 cockroach:destroy <service> [-f|--force]           # delete the cockroach service/data/container if there are no links left
 cockroach:enter <service>                          # enter or run a command in a running cockroach service container
@@ -103,20 +103,6 @@ You can also specify custom environment variables to start the cockroach service
 ```shell
 export COCKROACH_CUSTOM_ENV="USER=alpha;HOST=beta"
 dokku cockroach:create lollipop
-```
-
-Official Postgres "$DOCKER_BIN" image ls does not include postgis extension (amongst others). The following example creates a new postgres service using `postgis/postgis:13-3.1` image, which includes the `postgis` extension.
-
-```shell
-# use the appropriate image-version for your use-case
-dokku postgres:create postgis-database --image "postgis/postgis" --image-version "13-3.1"
-```
-
-To use pgvector instead, run the following:
-
-```shell
-# use the appropriate image-version for your use-case
-dokku postgres:create pgvector-database --image "pgvector/pgvector" --image-version "pg17"
 ```
 
 ### print the service information
@@ -317,7 +303,7 @@ The lifecycle of each service can be managed through the following commands:
 
 ```shell
 # usage
-dokku cockroach:connect <service>
+dokku cockroach:connect <service> <cockroach-flags>
 ```
 
 Connect to the service via the cockroach sql connection tool:
@@ -332,7 +318,7 @@ You can also pass additional arguments to `cockroach sql` console
 
 ```shell
 # Example to allow 'DROP DATABASE...' and similar unsafe operations
-dokku postgres:connect lollipop --safe-updates=false
+dokku cockroach:connect lollipop --safe-updates=false
 ```
 
 ### enter or run a command in a running cockroach service container
@@ -494,37 +480,6 @@ You can upgrade an existing service to a new image or image-version:
 dokku cockroach:upgrade lollipop
 ```
 
-Postgres does not handle upgrading data for major versions automatically (eg. 11 => 12). Upgrades should be done manually. Users are encouraged to upgrade to the latest minor release for their postgres version before performing a major upgrade.
-
-While there are many ways to upgrade a postgres database, for safety purposes, it is recommended that an upgrade is performed by exporting the data from an existing database and importing it into a new database. This also allows testing to ensure that applications interact with the database correctly after the upgrade, and can be used in a staging environment.
-
-The following is an example of how to upgrade a postgres database named `lollipop-11` from 11.13 to 12.8.
-
-```shell
-# stop any linked apps
-dokku ps:stop linked-app
-
-# export the database contents
-dokku postgres:export lollipop-11 > /tmp/lollipop-11.export
-
-# create a new database at the desired version
-dokku postgres:create lollipop-12 --image-version 12.8
-
-# import the export file
-dokku postgres:import lollipop-12 < /tmp/lollipop-11.export
-
-# run any sql tests against the new database to verify the import went smoothly
-
-# unlink the old database from your apps
-dokku postgres:unlink lollipop-11 linked-app
-
-# link the new database to your apps
-dokku postgres:link lollipop-12 linked-app
-
-# start the linked apps again
-dokku ps:start linked-app
-```
-
 ### Service Automation
 
 Service scripting can be executed using the following commands:
@@ -611,6 +566,40 @@ dokku cockroach:links lollipop
 ### Data Management
 
 The underlying service data can be imported and exported with the following commands:
+
+### import service CA keys ('ca.key' and 'ca.crt') from directory
+
+```shell
+# usage
+dokku cockroach:ca-import <service> <src-path>
+```
+
+Import CockroachDB Certificate Authority public/private keys from directory.
+
+> NOTE: All existing service certificates will be removed and regenerated using imported 'ca.key'.
+
+```shell
+dokku cockroach:ca-import lollipop ./certs/path/
+```
+
+### export service CA keys to directory and remove private key from service
+
+```shell
+# usage
+dokku cockroach:ca-export <service> <dest-path> <flags>
+```
+
+flags:
+
+- `--force-copy`: Don't remove ca.key private key from service after export
+
+Export CockroachDB Certificate Authority public/private keys to directory.
+
+> NOTE: Private key will be removed from service after export, so you won't be able to add new nodes.
+
+```shell
+dokku cockroach:ca-export lollipop ./certs/path/ [--force-copy]
+```
 
 ### import a tar dump into the cockroach service database
 
