@@ -29,7 +29,7 @@ service-haproxy-destroy-cmd() {
   fi
   if [[ -z "$DOKKU_APPS_FORCE_DELETE" ]]; then
     dokku_log_warn "WARNING: Potentially Destructive Action"
-    dokku_log_warn "This command will destroy $SERVICE $PLUGIN_SERVICE service."
+    dokku_log_warn "This command will destroy $SERVICE $PLUGIN_SERVICE haproxy service."
     dokku_log_warn "To proceed, type \"$SERVICE\""
     echo ""
 
