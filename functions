@@ -242,7 +242,7 @@ service_haproxy_start() {
   local DATABASE_NAME="$(get_database_name "$SERVICE")"
   #local SRC_PATH="$2"
 
-  local ADVERT_ADDR="$("$CR_SERVICE_ROOT/ADVERT_ADDR")"
+  local ADVERT_ADDR="$(get_advert_address "$SERVICE")"
   local network_alias="$(service_dns_hostname "$SERVICE")"
   local CR_LINK_ADDR="$network_alias"
 
