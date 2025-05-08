@@ -6,14 +6,53 @@ source "$PLUGIN_CORE_AVAILABLE_PATH/common/functions"
 source "$(dirname "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)")/functions"
 
 service-haproxy-destroy-cmd() {
-  #E destroy a haproxy load balancer for a $PLUGIN_COMMAND_PREFIX service named lollipop
+  #E destroy the service haproxy load balancer, it's data, and the running container
   #E dokku $PLUGIN_COMMAND_PREFIX:haproxy-destroy lollipop
-  declare desc="destroy a $PLUGIN_SERVICE haproxy load balancer service"
+  #A service, service to run command against
+  #F -f|--force, force destroy without asking for confirmation
+  declare desc="delete the $PLUGIN_SERVICE haproxy load balancer service/data/container if there are no links left"
   local cmd="$PLUGIN_COMMAND_PREFIX:haproxy-destroy" argv=("$@")
   [[ ${argv[0]} == "$cmd" ]] && shift 1
-  declare SERVICE="$1"
+  declare SERVICE="$1" FORCE_FLAG="$2"
 
-  service_haproxy_destroy "$SERVICE"
+  [[ -z "$SERVICE" ]] && dokku_log_fail "Please specify a valid name for the service"
+  verify_service_name "$SERVICE"
+  SERVICE_ROOT="$PLUGIN_DATA_ROOT/$SERVICE/haproxy"
+  LINKS_FILE="$SERVICE_ROOT/LINKS"
+  SERVICE_HOST_ROOT="$PLUGIN_DATA_HOST_ROOT/$SERVICE/haproxy"
+  SERVICE_NAME="$(get_service_name "${SERVICE}-haproxy")"
+
+  [[ -s "$LINKS_FILE" ]] && dokku_log_fail "Cannot delete linked service"
+
+  if [[ "$FORCE_FLAG" == "force" ]] || [[ "$FORCE_FLAG" == "-f" ]] || [[ "$FORCE_FLAG" == "--force" ]]; then
+    DOKKU_APPS_FORCE_DELETE=1
+  fi
+  if [[ -z "$DOKKU_APPS_FORCE_DELETE" ]]; then
+    dokku_log_warn "WARNING: Potentially Destructive Action"
+    dokku_log_warn "This command will destroy $SERVICE $PLUGIN_SERVICE service."
+    dokku_log_warn "To proceed, type \"$SERVICE\""
+    echo ""
+
+    read -rp "> " service_name
+    if [[ "$service_name" != "$SERVICE" ]]; then
+      dokku_log_warn "Confirmation did not match $SERVICE. Aborted."
+      exit 1
+    fi
+  fi
+
+  dokku_log_info2_quiet "Deleting $SERVICE haproxy load balancer"
+  #plugn trigger service-action pre-delete "$PLUGIN_COMMAND_PREFIX" "$SERVICE"
+  #service_backup_unschedule "$SERVICE"
+  service_container_rm "${SERVICE}-haproxy"
+
+  dokku_log_verbose_quiet "Removing data"
+  "$DOCKER_BIN" container run --rm -v "$SERVICE_HOST_ROOT/haproxy:/haproxy" "$PLUGIN_BUSYBOX_IMAGE" chmod 777 -R /haproxy
+  rm -rf "$SERVICE_ROOT"
+
+  #fn-plugin-property-destroy "$PLUGIN_COMMAND_PREFIX" "$SERVICE"
+
+  #plugn trigger service-action post-delete "$PLUGIN_COMMAND_PREFIX" "$SERVICE"
+  dokku_log_info2 "$PLUGIN_SERVICE haproxy container deleted: $SERVICE"
 }
 
 service-haproxy-destroy-cmd "$@"
