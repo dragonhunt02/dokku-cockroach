@@ -945,6 +945,16 @@ service_set_alias() {
   echo "$ALIAS" >"$ALIAS_FILE"
 }
 
+service_set_advert_address() {
+  declare desc="sets the advertised node address in use for a service"
+  declare SERVICE="$1" ADVERT_ADDR="$2"
+  local SERVICE_ROOT="$PLUGIN_DATA_ROOT/$SERVICE"
+  local ADVERT_ADDR_FILE="$SERVICE_ROOT/ADVERT_ADDR"
+
+  touch "$ADVERT_ADDR_FILE"
+  echo "$ADVERT_ADDR" >"$ADVERT_ADDR_FILE"
+}
+
 service_status() {
   declare desc="display the status of a service"
   declare SERVICE="$1"
