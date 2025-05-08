@@ -46,7 +46,7 @@ service-haproxy-destroy-cmd() {
   service_container_rm "${SERVICE}-haproxy"
 
   dokku_log_verbose_quiet "Removing data"
-  "$DOCKER_BIN" container run --rm -v "$SERVICE_HOST_ROOT/haproxy:/haproxy" "$PLUGIN_BUSYBOX_IMAGE" chmod 777 -R /haproxy
+  "$DOCKER_BIN" container run --rm -v "$SERVICE_HOST_ROOT:/haproxy" "$PLUGIN_BUSYBOX_IMAGE" chmod 777 -R /haproxy
   rm -rf "$SERVICE_ROOT"
 
   #fn-plugin-property-destroy "$PLUGIN_COMMAND_PREFIX" "$SERVICE"
