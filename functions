@@ -268,7 +268,7 @@ service_haproxy_start() {
 
   dokku_log_verbose_quiet "Generating CockroachDB haproxy config"
   "$DOCKER_BIN" container exec -i "$CR_SERVICE_NAME" cockroach gen haproxy --certs-dir=/cockroach/certs --host=127.0.0.1 --out /cockroach/haproxy/haproxy.cfg
-  "$DOCKER_BIN" container exec -i "$CR_SERVICE_NAME" sed -i "/server cockroach1/ s|$ADVERT_ADDR|$CR_LINK_ADDR|g" /cockroach/haproxy/haproxy.cfg
+  "$DOCKER_BIN" container exec -i "$CR_SERVICE_NAME" sed -i "/server $SERVICE_NAME/ s|$ADVERT_ADDR|$CR_LINK_ADDR|g" /cockroach/haproxy/haproxy.cfg
   "$DOCKER_BIN" container exec -i "$CR_SERVICE_NAME" cat /cockroach/haproxy/haproxy.cfg
 
   dokku_log_verbose_quiet "Creating CockroachDB haproxy load balancer"
