@@ -5,7 +5,7 @@ set -eo pipefail
 source "$PLUGIN_CORE_AVAILABLE_PATH/common/functions"
 source "$(dirname "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)")/functions"
 
-service-create-cmd() {
+service-haproxy-start-cmd() {
   #E start a haproxy load balancer for a $PLUGIN_COMMAND_PREFIX service named lollipop
   #E dokku $PLUGIN_COMMAND_PREFIX:haproxy-start lollipop
   #E you can also specify the image and image version to use for the service.
@@ -17,4 +17,4 @@ service-create-cmd() {
   service_haproxy_start "$SERVICE"
 }
 
-service-create-cmd "$@"
+service-haproxy-start-cmd "$@"
