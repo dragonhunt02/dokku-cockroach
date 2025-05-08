@@ -109,7 +109,7 @@ service_create_container() {
   local ADVERT_ADDR="$2"
   [[ -z "$ADVERT_ADDR" ]] && ADVERT_ADDR=127.0.0.1 && dokku_log_warn "Public advertised address not set, fallback to 127.0.0.1. Other nodes may fail connecting to cluster."
 
-  echo "$ADVERT_ADDR" > "$SERVICE_ROOT/$ADVERT_ADDR"
+  echo "$ADVERT_ADDR" > "$SERVICE_ROOT/ADVERT_ADDR"
 
   if [[ -f "$SERVICE_ROOT/CONFIG_OPTIONS" ]]; then
     export CONFIG_OPTIONS="$(cat "$SERVICE_ROOT/CONFIG_OPTIONS")"
@@ -240,9 +240,12 @@ service_haproxy_start() {
   local DATABASE_NAME="$(get_database_name "$SERVICE")"
   #local SRC_PATH="$2"
 
-  local ADVERT_ADDR="$("$CR_SERVICE_ROOT/$ADVERT_ADDR")"
+  local ADVERT_ADDR="$("$CR_SERVICE_ROOT/ADVERT_ADDR")"
   local network_alias="$(service_dns_hostname "$SERVICE")"
   local CR_LINK_ADDR="$network_alias"
+
+  #touch "$SERVICE_ROOT/ID"
+  touch "$SERVICE_ROOT/ENV"
 
   rm -f "$SERVICE_ROOT/ID"
   declare -a DOCKER_ARGS
