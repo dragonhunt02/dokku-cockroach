@@ -109,6 +109,8 @@ service_create_container() {
   local ADVERT_ADDR="$2"
   [[ -z "$ADVERT_ADDR" ]] && ADVERT_ADDR=127.0.0.1 && dokku_log_warn "Public advertised address not set, fallback to 127.0.0.1. Other nodes may fail connecting to cluster."
 
+  echo "$ADVERT_ADDR" > "$SERVICE_ROOT/$ADVERT_ADDR"
+
   if [[ -f "$SERVICE_ROOT/CONFIG_OPTIONS" ]]; then
     export CONFIG_OPTIONS="$(cat "$SERVICE_ROOT/CONFIG_OPTIONS")"
   fi
@@ -129,6 +131,7 @@ service_create_container() {
   DOCKER_ARGS+=("--restart=always")
   DOCKER_ARGS+=("--volume=$SERVICE_HOST_ROOT/data:/cockroach/cockroach-data")
   DOCKER_ARGS+=("--volume=$SERVICE_HOST_ROOT/cockroach-certs:/cockroach/certs")
+  DOCKER_ARGS+=("--volume=$SERVICE_HOST_ROOT/haproxy/data:/cockroach/haproxy")
 
   declare -a LINK_CONTAINER_DOCKER_ARGS
   LINK_CONTAINER_DOCKER_ARGS=()
@@ -224,6 +227,58 @@ service_create_container() {
   
   dokku_log_info2 "$PLUGIN_SERVICE container created: $SERVICE"
   service_info "$SERVICE"
+}
+
+service_haproxy_start() {
+  local SERVICE="$1"
+  local SERVICE_ROOT="$PLUGIN_DATA_ROOT/$SERVICE/haproxy"
+  local SERVICE_HOST_ROOT="$PLUGIN_DATA_HOST_ROOT/$SERVICE/haproxy"
+  local SERVICE_NAME="$(get_service_name "${SERVICE}-haproxy")"
+
+  local CR_SERVICE_ROOT="$PLUGIN_DATA_ROOT/$SERVICE"
+  local CR_SERVICE_NAME="$(get_service_name "$SERVICE")"
+  local DATABASE_NAME="$(get_database_name "$SERVICE")"
+  #local SRC_PATH="$2"
+
+  local ADVERT_ADDR="$("$CR_SERVICE_ROOT/$ADVERT_ADDR")"
+  local network_alias="$(service_dns_hostname "$SERVICE")"
+  local CR_LINK_ADDR="$network_alias"
+
+  rm -f "$SERVICE_ROOT/ID"
+  declare -a DOCKER_ARGS
+  DOCKER_ARGS=()
+  DOCKER_ARGS+=("--cidfile=$SERVICE_ROOT/ID")
+  DOCKER_ARGS+=("--env-file=$SERVICE_ROOT/ENV")
+  DOCKER_ARGS+=("--hostname=$SERVICE_NAME")
+  DOCKER_ARGS+=("--label=dokku.service=$PLUGIN_COMMAND_PREFIX")
+  DOCKER_ARGS+=("--label=dokku=service")
+  DOCKER_ARGS+=("--name=$SERVICE_NAME")
+  DOCKER_ARGS+=("--restart=always")
+  DOCKER_ARGS+=("--volume=$SERVICE_HOST_ROOT/data:/usr/local/etc/haproxy:ro")
+  DOCKER_ARGS+=("--link=$SERVICE_NAME:$network_alias")
+
+  #declare -a LINK_CONTAINER_DOCKER_ARGS
+  #LINK_CONTAINER_DOCKER_ARGS=()
+  #LINK_CONTAINER_DOCKER_ARGS+=("--rm")
+  #LINK_CONTAINER_DOCKER_ARGS+=("--link")
+  #LINK_CONTAINER_DOCKER_ARGS+=("$SERVICE_NAME:$network_alias")
+
+  dokku_log_verbose_quiet "Generating CockroachDB haproxy config"
+  "$DOCKER_BIN" container exec -i "$CR_SERVICE_NAME" cockroach gen haproxy --certs-dir=/cockroach/certs --host=127.0.0.1 --out /cockroach/haproxy/haproxy.cfg
+  "$DOCKER_BIN" container exec -i "$CR_SERVICE_NAME" sed -i "/server cockroach1/ s|$ADVERT_ADDR|$CR_LINK_ADDR|g" /cockroach/haproxy/haproxy.cfg
+  "$DOCKER_BIN" container exec -i "$CR_SERVICE_NAME" cat /cockroach/haproxy/haproxy.cfg
+
+  dokku_log_verbose_quiet "Creating CockroachDB haproxy load balancer"
+# suppress_output 
+  "$DOCKER_BIN" container create "${DOCKER_ARGS[@]}" "$CR_HAPROXY_IMAGE:$CR_HAPROXY_IMAGE_VERSION"
+
+  dokku_log_verbose_quiet "Starting haproxy load balancer"
+  #suppress_output 
+  "$DOCKER_BIN" container start "$(cat "$SERVICE_ROOT/ID")"
+
+  dokku_log_info2 "$PLUGIN_SERVICE container created: $SERVICE"
+  service_info "$SERVICE"
+
 }
 
 service_export() {
