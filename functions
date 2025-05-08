@@ -245,13 +245,13 @@ service_haproxy_start() {
   local CR_LINK_ADDR="$network_alias"
 
   #touch "$SERVICE_ROOT/ID"
-  touch "$SERVICE_ROOT/ENV"
+  #touch "$SERVICE_ROOT/ENV"
 
   rm -f "$SERVICE_ROOT/ID"
   declare -a DOCKER_ARGS
   DOCKER_ARGS=()
   DOCKER_ARGS+=("--cidfile=$SERVICE_ROOT/ID")
-  DOCKER_ARGS+=("--env-file=$SERVICE_ROOT/ENV")
+#  DOCKER_ARGS+=("--env-file=$SERVICE_ROOT/ENV")
   DOCKER_ARGS+=("--hostname=$SERVICE_NAME")
   DOCKER_ARGS+=("--label=dokku.service=$PLUGIN_COMMAND_PREFIX")
   DOCKER_ARGS+=("--label=dokku=service")
