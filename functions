@@ -109,7 +109,9 @@ service_create_container() {
   local ADVERT_ADDR="$2"
   [[ -z "$ADVERT_ADDR" ]] && ADVERT_ADDR=127.0.0.1 && dokku_log_warn "Public advertised address not set, fallback to 127.0.0.1. Other nodes may fail connecting to cluster."
 
-  echo "$ADVERT_ADDR" > "$SERVICE_ROOT/ADVERT_ADDR"
+  service_set_advert_address $SERVICE $ADVERT_ADDR
+  #echo "$ADVERT_ADDR" > "$SERVICE_ROOT/ADVERT_ADDR"
+
 
   if [[ -f "$SERVICE_ROOT/CONFIG_OPTIONS" ]]; then
     export CONFIG_OPTIONS="$(cat "$SERVICE_ROOT/CONFIG_OPTIONS")"
@@ -268,6 +270,8 @@ service_haproxy_start() {
 
   dokku_log_verbose_quiet "Generating CockroachDB haproxy config"
   "$DOCKER_BIN" container exec -i "$CR_SERVICE_NAME" cockroach gen haproxy --certs-dir=/cockroach/certs --host=127.0.0.1 --out /cockroach/haproxy/haproxy.cfg
+
+  "$DOCKER_BIN" container exec -i "$CR_SERVICE_NAME" cat /cockroach/haproxy/haproxy.cfg
   "$DOCKER_BIN" container exec -i "$CR_SERVICE_NAME" sed -i "/server $SERVICE_NAME/ s|$ADVERT_ADDR|$CR_LINK_ADDR|g" /cockroach/haproxy/haproxy.cfg
   "$DOCKER_BIN" container exec -i "$CR_SERVICE_NAME" cat /cockroach/haproxy/haproxy.cfg
 
