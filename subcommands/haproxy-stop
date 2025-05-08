@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+source "$(dirname "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)")/config"
+set -eo pipefail
+[[ $DOKKU_TRACE ]] && set -x
+source "$PLUGIN_CORE_AVAILABLE_PATH/common/functions"
+source "$(dirname "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)")/functions"
+
+service-haproxy-destroy-cmd() {
+  #E destroy a haproxy load balancer for a $PLUGIN_COMMAND_PREFIX service named lollipop
+  #E dokku $PLUGIN_COMMAND_PREFIX:haproxy-destroy lollipop
+  declare desc="destroy a $PLUGIN_SERVICE haproxy load balancer service"
+  local cmd="$PLUGIN_COMMAND_PREFIX:haproxy-destroy" argv=("$@")
+  [[ ${argv[0]} == "$cmd" ]] && shift 1
+  declare SERVICE="$1"
+
+  service_haproxy_destroy "$SERVICE"
+}
+
+service-haproxy-destroy-cmd "$@"
