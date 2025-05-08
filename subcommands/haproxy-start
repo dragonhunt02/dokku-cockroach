@@ -14,7 +14,7 @@ service-create-cmd() {
   [[ ${argv[0]} == "$cmd" ]] && shift 1
   declare SERVICE="$1"
 
-  service_create "$SERVICE"
+  service_haproxy_start "$SERVICE"
 }
 
 service-create-cmd "$@"
