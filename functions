@@ -264,8 +264,9 @@ service_haproxy_destroy() {
 
   dokku_log_verbose_quiet "Removing data"
   "$DOCKER_BIN" container run --rm -v "$SERVICE_HOST_ROOT:/haproxy" "$PLUGIN_BUSYBOX_IMAGE" chmod 777 -R /haproxy
-  rm -rf "$SERVICE_ROOT"
-  mkdir -p "$SERVICE_ROOT/data" # Keep folder to avoid errors
+
+  find "$SERVICE_ROOT" ! -name 'data' -maxdepth 1 -exec rm -rf {} +
+  #mkdir -p "$SERVICE_ROOT/data" # Keep folder to avoid errors
 
   #fn-plugin-property-destroy "$PLUGIN_COMMAND_PREFIX" "$SERVICE"
 
