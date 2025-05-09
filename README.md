@@ -39,7 +39,7 @@ cockroach:exists <service>                         # check if the cockroach serv
 cockroach:export <service>                         # export a tar dump of the cockroach service database using BACKUP
 cockroach:expose <service> <ports...>              # expose a cockroach service on custom host:port if provided (random port on the 0.0.0.0 interface if otherwise unspecified)
 cockroach:haproxy-destroy <service> [-f|--force]   # delete the cockroach haproxy load balancer service/data/container if there are no links left
-cockroach:haproxy-start <service>                  # create a cockroach haproxy load balancer service
+cockroach:haproxy-start <service>                  # create a cockroach haproxy load balancer for a cockroach service
 cockroach:import <service>                         # import a tar dump into the cockroach service database
 cockroach:info <service> [--single-info-flag]      # print the service information
 cockroach:link <service> <app> [--link-flags...]   # link the cockroach service to the app
@@ -100,7 +100,7 @@ export COCKROACH_IMAGE_VERSION="${PLUGIN_IMAGE_VERSION}"
 dokku cockroach:create lollipop
 ```
 
-You can also specify to use CockroachDB `FOSS` `${PLUGIN_IMAGE_VERSION}` docker image built from [oxidecomputer/cockroach](https://github.com/oxidecomputer/cockroach):
+You can also specify to use CockroachDB `FOSS` v22.1.0 docker image built from [oxidecomputer/cockroach](https://github.com/oxidecomputer/cockroach):
 
 ```shell
 export COCKROACH_FOSS_ENABLED=true

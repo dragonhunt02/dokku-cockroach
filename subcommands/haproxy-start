@@ -9,7 +9,7 @@ service-haproxy-start-cmd() {
   #E start a haproxy load balancer for a $PLUGIN_COMMAND_PREFIX service named lollipop
   #E dokku $PLUGIN_COMMAND_PREFIX:haproxy-start lollipop
   #E you can also specify the image and image version to use for the service.
-  declare desc="create a $PLUGIN_SERVICE haproxy load balancer service"
+  declare desc="create a $PLUGIN_SERVICE haproxy load balancer for a cockroach service"
   local cmd="$PLUGIN_COMMAND_PREFIX:haproxy-start" argv=("$@")
   [[ ${argv[0]} == "$cmd" ]] && shift 1
   declare SERVICE="$1"
