@@ -17,6 +17,12 @@ service-haproxy-destroy-cmd() {
 
   [[ -z "$SERVICE" ]] && dokku_log_fail "Please specify a valid name for the service"
   verify_service_name "$SERVICE"
+
+  service_haproxy_destroy "$SERVICE" "$FORCE_FLAG"
+
+  echo "Finishedd"
+  return 0
+
   SERVICE_ROOT="$PLUGIN_DATA_ROOT/$SERVICE/haproxy"
   LINKS_FILE="$SERVICE_ROOT/LINKS"
   SERVICE_HOST_ROOT="$PLUGIN_DATA_HOST_ROOT/$SERVICE/haproxy"
