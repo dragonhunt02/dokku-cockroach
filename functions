@@ -65,6 +65,7 @@ service_create() {
   [[ ! -d "$PLUGIN_DATA_ROOT/$SERVICE" ]] || dokku_log_fail "$PLUGIN_SERVICE service $SERVICE already exists"
   SERVICE_ROOT="$PLUGIN_DATA_ROOT/$SERVICE"
   LINKS_FILE="$SERVICE_ROOT/LINKS"
+  COCKROACH_DOCKERFILE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/Dockerfile-foss"
 
   service_parse_args "${@:2}"
 
@@ -75,7 +76,13 @@ service_create() {
       dokku_log_warn "$PLUGIN_SERVICE service creation failed"
       exit 1
     fi
-    "$DOCKER_BIN" image pull "$PLUGIN_IMAGE:$PLUGIN_IMAGE_VERSION" || dokku_log_fail "$PLUGIN_SERVICE image $PLUGIN_IMAGE:$PLUGIN_IMAGE_VERSION pull failed"
+    if [[ "$COCKROACH_FOSS_ENABLED" == "true" ]]; then
+      dokku_log_warn "CockroachDB FOSS build enabled"
+      dokku_log_warn "Building version $COCKROACH_IMAGE_FOSS_VERSION"
+      "$DOCKER_BIN" image build -t $COCKROACH_IMAGE_FOSS:$COCKROACH_IMAGE_FOSS_VERSION -f "$COCKROACH_DOCKERFILE" .
+    else
+      "$DOCKER_BIN" image pull "$PLUGIN_IMAGE:$PLUGIN_IMAGE_VERSION" || dokku_log_fail "$PLUGIN_SERVICE image $PLUGIN_IMAGE:$PLUGIN_IMAGE_VERSION pull failed"
+    fi
   fi
 
   plugn trigger service-action pre-create "$PLUGIN_COMMAND_PREFIX" "$SERVICE"
