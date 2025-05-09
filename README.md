@@ -38,6 +38,8 @@ cockroach:enter <service>                          # enter or run a command in a
 cockroach:exists <service>                         # check if the cockroach service exists
 cockroach:export <service>                         # export a tar dump of the cockroach service database using BACKUP
 cockroach:expose <service> <ports...>              # expose a cockroach service on custom host:port if provided (random port on the 0.0.0.0 interface if otherwise unspecified)
+cockroach:haproxy-destroy <service> [-f|--force]   # delete the cockroach haproxy load balancer service/data/container if there are no links left
+cockroach:haproxy-start <service>                  # create a cockroach haproxy load balancer service
 cockroach:import <service>                         # import a tar dump into the cockroach service database
 cockroach:info <service> [--single-info-flag]      # print the service information
 cockroach:link <service> <app> [--link-flags...]   # link the cockroach service to the app
@@ -95,6 +97,13 @@ You can also specify the image and image version to use for the service. It *mus
 ```shell
 export COCKROACH_IMAGE="cockroachdb/cockroach"
 export COCKROACH_IMAGE_VERSION="${PLUGIN_IMAGE_VERSION}"
+dokku cockroach:create lollipop
+```
+
+You can also specify to use CockroachDB `FOSS` `${PLUGIN_IMAGE_VERSION}` docker image built from [oxidecomputer/cockroach](https://github.com/oxidecomputer/cockroach):
+
+```shell
+export COCKROACH_FOSS_ENABLED=true
 dokku cockroach:create lollipop
 ```
 
@@ -478,6 +487,18 @@ You can upgrade an existing service to a new image or image-version:
 
 ```shell
 dokku cockroach:upgrade lollipop
+```
+
+CockroachDB plugin does not handle upgrading data for major versions automatically (eg. v24 => v25). Upgrades should be done manually. Users are encouraged to upgrade to the latest minor release for their cockroach version before performing a major upgrade.
+
+It is recommended to route app requests to cluster using load balancer to prevent service disruption during upgrade.
+
+Upgrading image with dokku won't upgrade other nodes in cluster. You have to manually upgrade every node in the cluster with the new version to finalize the upgrade. More information is available at https://www.cockroachlabs.com/docs/v25.1/upgrade-cockroach-version.html
+
+For safety purposes, it is recommended to export a backup before starting an upgrade.
+```shell
+# export the database contents
+dokku cockroach:export lollipop-24 > /tmp/lollipop-24.tar
 ```
 
 ### Service Automation
