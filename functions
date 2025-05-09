@@ -231,6 +231,46 @@ service_create_container() {
   service_info "$SERVICE"
 }
 
+service_haproxy_destroy() {
+  local SERVICE="$1"
+  local SERVICE_ROOT="$PLUGIN_DATA_ROOT/$SERVICE/haproxy"
+  local LINKS_FILE="$SERVICE_ROOT/LINKS"
+  local SERVICE_HOST_ROOT="$PLUGIN_DATA_HOST_ROOT/$SERVICE/haproxy"
+  local SERVICE_NAME="$(get_service_name "${SERVICE}-haproxy")"
+
+  [[ -s "$LINKS_FILE" ]] && dokku_log_fail "Cannot delete linked service"
+
+  if [[ "$FORCE_FLAG" == "force" ]] || [[ "$FORCE_FLAG" == "-f" ]] || [[ "$FORCE_FLAG" == "--force" ]]; then
+    local DOKKU_APPS_FORCE_DELETE=1
+  fi
+  if [[ -z "$DOKKU_APPS_FORCE_DELETE" ]]; then
+    dokku_log_warn "WARNING: Potentially Destructive Action"
+    dokku_log_warn "This command will destroy $SERVICE $PLUGIN_SERVICE haproxy service."
+    dokku_log_warn "To proceed, type \"$SERVICE\""
+    echo ""
+
+    read -rp "> " service_name
+    if [[ "$service_name" != "$SERVICE" ]]; then
+      dokku_log_warn "Confirmation did not match $SERVICE. Aborted."
+      exit 1
+    fi
+  fi
+
+  dokku_log_info2_quiet "Deleting $SERVICE haproxy load balancer"
+  #plugn trigger service-action pre-delete "$PLUGIN_COMMAND_PREFIX" "$SERVICE"
+  #service_backup_unschedule "$SERVICE"
+  service_container_rm "${SERVICE}-haproxy"
+
+  dokku_log_verbose_quiet "Removing data"
+  "$DOCKER_BIN" container run --rm -v "$SERVICE_HOST_ROOT:/haproxy" "$PLUGIN_BUSYBOX_IMAGE" chmod 777 -R /haproxy
+  rm -rf "$SERVICE_ROOT"
+
+  #fn-plugin-property-destroy "$PLUGIN_COMMAND_PREFIX" "$SERVICE"
+
+  #plugn trigger service-action post-delete "$PLUGIN_COMMAND_PREFIX" "$SERVICE"
+  dokku_log_info2 "$PLUGIN_SERVICE haproxy container deleted: $SERVICE"
+}
+
 service_haproxy_start() {
   local SERVICE="$1"
   local SERVICE_ROOT="$PLUGIN_DATA_ROOT/$SERVICE/haproxy"
