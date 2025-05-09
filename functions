@@ -233,6 +233,7 @@ service_create_container() {
 
 service_haproxy_destroy() {
   local SERVICE="$1"
+  local FORCE_FLAG="$2"
   local SERVICE_ROOT="$PLUGIN_DATA_ROOT/$SERVICE/haproxy"
   local LINKS_FILE="$SERVICE_ROOT/LINKS"
   local SERVICE_HOST_ROOT="$PLUGIN_DATA_HOST_ROOT/$SERVICE/haproxy"
