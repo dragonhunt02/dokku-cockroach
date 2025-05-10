@@ -9,10 +9,10 @@ RUN mkdir -p /work
 
 WORKDIR /app/cockroach
 
-#RUN bash .github/buildomat/jobs/build-linux.sh
+RUN bash .github/buildomat/jobs/build-linux.sh
 
 #Test
-RUN curl -OL https://github.com/dragonhunt02/vsekai-cockroachdb/releases/download/cockroach-38/cockroach.tgz
+#RUN curl -OL https://github.com/dragonhunt02/vsekai-cockroachdb/releases/download/cockroach-38/cockroach.tgz
 #RUN curl -OL https://buildomat.eng.oxide.computer/public/file/oxidecomputer/cockroach/linux-amd64/865aff1595e494c2ce95030c7a2f20c4370b5ff8/cockroach.tgz
 
 RUN tar -xvzf cockroach.tgz
