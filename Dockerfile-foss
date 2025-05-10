@@ -18,8 +18,11 @@ RUN curl -OL https://buildomat.eng.oxide.computer/public/file/oxidecomputer/cock
 RUN tar -xvzf cockroach.tgz
 RUN ls -a .
 
-FROM fedora:41
-RUN dnf update -y && dnf install -y tar gzip xz tzdata hostname && dnf clean all
+FROM debian:bookworm-slim
+RUN apt-get update -y && \
+  apt-get install -y gzip xz-utils tzdata hostname tar
+#FROM fedora:41
+#RUN dnf update -y && dnf install -y tar gzip xz tzdata hostname && dnf clean all
 # ubi10 is required because debian:bookworm builds require glibc 2.36 minimum
 # Replace with line below when ubi10 minimal exits beta and uncomment microdnf commands
 # FROM registry.access.redhat.com/ubi10/ubi-minimal
